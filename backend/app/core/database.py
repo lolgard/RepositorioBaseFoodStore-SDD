@@ -1,0 +1,43 @@
+"""
+Database configuration using SQLModel.
+Provides engine, session maker, and async session dependency.
+"""
+from typing import AsyncGenerator
+
+from sqlmodel import SQLModel, create_engine
+from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
+
+from app.core.config import settings
+
+# Create async engine
+engine: AsyncEngine = create_engine(
+    settings.DATABASE_URL,
+    echo=settings.DEBUG,
+    future=True,
+)
+
+# Create async session maker
+async_session = async_sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
+
+
+async def get_session() -> AsyncGenerator[AsyncSession, None]:
+    """
+    Dependency for getting an async database session.
+    Yields an async session and closes it after use.
+    """
+    async with async_session() as session:
+        yield session
+
+
+async def init_db() -> None:
+    """
+    Initialize the database by creating all tables.
+    Should be called on application startup.
+    """
+    async with engine.begin() as conn:
+        await conn.run_sync(SQLModel.metadata.create_all)
