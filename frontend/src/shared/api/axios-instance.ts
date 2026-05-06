@@ -1,14 +1,20 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
-import { Zustand } from 'zustand';
+import { useAuthStore } from '@/shared/store/auth-store';
 
 // Extend Axios config to include _retry flag
 interface RetryableAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
+// Get API URL from environment or use default
+const getApiUrl = (): string => {
+  const envUrl = (import.meta as any).env?.VITE_API_URL;
+  return envUrl || '/api/v1';
+};
+
 // Create Axios instance
 const api: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api/v1',
+  baseURL: getApiUrl(),
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -47,7 +53,7 @@ api.interceptors.response.use(
 
         // Attempt to refresh tokens
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL || '/api/v1'}/auth/refresh`,
+          `${getApiUrl()}/auth/refresh`,
           { refresh_token: refreshToken }
         );
 

@@ -14,12 +14,6 @@ from app.main import app
 from app.core.database import get_session
 
 
-@pytest.fixture(scope="session")
-def anyio_backend():
-    """Use asyncio for anyio."""
-    return "asyncio"
-
-
 @pytest.fixture(scope="function")
 async def test_engine() -> AsyncGenerator[AsyncEngine, None]:
     """Create a test in-memory SQLite engine."""
