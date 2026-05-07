@@ -16,7 +16,7 @@ interface AuthState {
 }
 
 // Persist config
-const persistOptions: PersistOptions<AuthState> = {
+const persistOptions: PersistOptions<AuthState, Pick<AuthState, 'accessToken' | 'refreshToken' | 'user' | 'isAuthenticated'>> = {
   name: 'food-store-auth',
   partialize: (state) => ({
     accessToken: state.accessToken,

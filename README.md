@@ -83,10 +83,15 @@ Este proyecto usa **OPSX** (Spec-Driven Development):
 
 **Changes planificados:** 19 changes (ver `docs/CHANGES.md`)
 
-## ✅ Change Actual: `infrastructure-setup`
+## Change Archivado: `infrastructure-setup`
 
-- **Status:** En progreso (36/36 tasks completadas)
+- **Status:** ✅ Archivado (2026-05-07)
 - **Descripción:** Scaffolding inicial del monorepo, configuración base de backend/frontend, patrones base.
+- **Main specs publicados:**
+  - `openspec/specs/backend-setup/spec.md`
+  - `openspec/specs/error-handling/spec.md`
+  - `openspec/specs/frontend-setup/spec.md`
+  - `openspec/specs/validation-patterns/spec.md`
 
 ## 🤝 Team
 

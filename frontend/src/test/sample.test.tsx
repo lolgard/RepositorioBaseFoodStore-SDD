@@ -1,7 +1,6 @@
 /**
  * Sample test to verify Vite + React + TypeScript setup works.
  */
-import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 
 describe('App Setup', () => {

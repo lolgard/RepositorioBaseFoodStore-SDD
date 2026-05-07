@@ -4,17 +4,21 @@ Provides engine, session maker, and async session dependency.
 """
 from typing import AsyncGenerator
 
-from sqlmodel import SQLModel, create_engine
+from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 
 from app.core.config import settings
 
+# Convert postgresql:// to postgresql+asyncpg:// for async driver
+DATABASE_URL = settings.DATABASE_URL.replace(
+    "postgresql://", "postgresql+asyncpg://"
+)
+
 # Create async engine
-engine: AsyncEngine = create_engine(
-    settings.DATABASE_URL,
+engine: AsyncEngine = create_async_engine(
+    DATABASE_URL,
     echo=settings.DEBUG,
-    future=True,
 )
 
 # Create async session maker

@@ -1,138 +1,84 @@
-# Food Store Backend
+# Food Store — Backend API
 
-API backend para la plataforma de e-commerce de alimentos, construida con **FastAPI** y **SQLModel**.
+API REST construida con **FastAPI** + **SQLModel** + **PostgreSQL**.
 
-## 🚀 Tecnologías
+## 🛠️ Tech Stack
 
-- **FastAPI** - Framework web moderno y rápido
-- **SQLModel** - ORM moderno basado en SQLAlchemy y Pydantic
-- **PostgreSQL** - Base de datos principal
+- **FastAPI** - Framework ASGI
+- **SQLModel** - ORM con Pydantic v2
 - **Alembic** - Migraciones de base de datos
-- **Pydantic Settings** - Gestión de configuración
+- **PostgreSQL** - Base de datos relacional
+- **JWT** - Autenticación con access + refresh tokens
+- **slowapi** - Rate limiting
+- **Pydantic v2** - Validación de datos
+- **Pytest** - Tests
 
-## 📋 Prerrequisitos
-
-- Python >= 3.10
-- PostgreSQL
-- (Opcional) Entorno virtual: `python -m venv venv`
-
-## 🛠️ Instalación
-
-1. **Clonar el repositorio**
-   ```bash
-   git clone <repo-url>
-   cd backend
-   ```
-
-2. **Instalar dependencias**
-   ```bash
-   pip install -e ".[dev]"
-   ```
-
-3. **Configurar variables de entorno**
-   
-   Copiar `.env.example` a `.env` y ajustar:
-   ```bash
-   cp .env.example .env
-   ```
-   
-   Variables importantes:
-   - `DATABASE_URL` - URL de conexión a PostgreSQL
-   - `SECRET_KEY` - Clave secreta para JWT
-   - `ACCESS_TOKEN_EXPIRE_MINUTES` - Expiración de access token (default: 30)
-   - `REFRESH_TOKEN_EXPIRE_DAYS` - Expiración de refresh token (default: 7)
-
-4. **Ejecutar migraciones**
-   ```bash
-   alembic upgrade head
-   ```
-
-5. **Iniciar el servidor**
-   ```bash
-   uvicorn app.main:app --reload
-   ```
-
-   La API estará disponible en `http://localhost:8000`
-   
-   - Docs (Swagger): `http://localhost:8000/docs`
-   - ReDoc: `http://localhost:8000/redoc`
-
-## 🧪 Tests
-
-Ejecutar tests con pytest:
-```bash
-pytest
-```
-
-Para tests con coverage:
-```bash
-pytest --cov=app --cov-report=html
-```
-
-## 📦 Estructura del Proyecto
+## 📁 Estructura
 
 ```
 backend/
 ├── app/
-│   ├── core/          # Configuración, database, excepciones
-│   ├── models/        # Modelos SQLModel
-│   ├── schemas/       # Esquemas Pydantic
-│   ├── routers/       # Endpoints de la API
-│   ├── services/      # Lógica de negocio
-│   ├── repositories/   # Acceso a datos
-│   └── main.py       # Punto de entrada FastAPI
-├── alembic/          # Migraciones
-├── tests/            # Tests con pytest
-├── pyproject.toml    # Configuración del proyecto
-└── alembic.ini       # Configuración de Alembic
+│   ├── core/           # Config, database, exceptions
+│   ├── models/         # SQLModel models
+│   ├── schemas/        # Pydantic v2 schemas
+│   ├── repositories/   # BaseRepository[T], UnitOfWork
+│   ├── services/       # Business logic
+│   ├── routers/        # API endpoints
+│   └── main.py         # FastAPI app entry point
+├── alembic/            # Migrations
+│   └── versions/       # Migration scripts
+├── tests/              # Test suite
+├── pyproject.toml      # Project config & dependencies
+└── alembic.ini         # Alembic configuration
 ```
 
-## 🔄 Migraciones con Alembic
+## 🚀 Setup
 
-Generar una nueva migración:
 ```bash
-alembic revision --autogenerate -m "descripción del cambio"
-```
+# Crear entorno virtual
+python -m venv venv
+source venv/Scripts/activate  # Windows
 
-Aplicar migraciones pendientes:
-```bash
+# Instalar dependencias
+pip install -e .
+pip install -e ".[dev]"      # Incluye dev dependencies
+
+# Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tu conexión a PostgreSQL
+
+# Ejecutar migraciones
 alembic upgrade head
+
+# Iniciar servidor
+uvicorn app.main:app --reload
 ```
 
-Revertir última migración:
+## 🧪 Tests
+
 ```bash
+cd backend
+pip install -e ".[dev]"
+pytest -v
+```
+
+## 📋 Migraciones
+
+```bash
+# Crear nueva migración
+alembic revision --autogenerate -m "descripcion"
+
+# Aplicar migraciones
+alembic upgrade head
+
+# Revertir última migración
 alembic downgrade -1
 ```
 
-## 📝 API Endpoints
+## 🔗 API Endpoints
 
-### Autenticación
-- `POST /api/v1/auth/register` - Registro de usuario
-- `POST /api/v1/auth/login` - Inicio de sesión
-- `POST /api/v1/auth/refresh` - Refresh token
+La API corre en `http://localhost:8000`.
 
-### Usuarios
-- `GET /api/v1/users/me` - Obtener perfil actual
-- `PUT /api/v1/users/me` - Actualizar perfil
-
-### Productos
-- `GET /api/v1/products` - Listar productos
-- `GET /api/v1/products/{id}` - Obtener producto
-- `POST /api/v1/products` - Crear producto (admin)
-- `PUT /api/v1/products/{id}` - Actualizar producto (admin)
-- `DELETE /api/v1/products/{id}` - Eliminar producto (admin)
-
-## 🔒 Autenticación
-
-La API usa **JWT (JSON Web Tokens)** con:
-- Access tokens de corta duración (30 min default)
-- Refresh tokens de larga duración (7 días default)
-
-Incluir el token en el header:
-```
-Authorization: Bearer <access_token>
-```
-
-## 📄 Licencia
-
-MIT
+- **Docs**: `http://localhost:8000/docs`
+- **OpenAPI JSON**: `http://localhost:8000/openapi.json`
+- **Health Check**: `GET /api/v1/health`

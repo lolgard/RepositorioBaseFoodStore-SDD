@@ -55,7 +55,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                     Profile
                   </NavLink>
                   <span className="text-sm text-gray-600">
-                    {user.nombre} ({user.rol})
+                    {user.first_name} ({user.role})
                   </span>
                   <button
                     onClick={handleLogout}

@@ -6,7 +6,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const { isAuthenticated, accessToken, setTokens, logout } = useAuthStore();
+  const { isAuthenticated, setTokens, logout } = useAuthStore();
 
   useEffect(() => {
     // Check for stored tokens on mount

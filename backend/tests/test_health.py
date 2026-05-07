@@ -7,17 +7,18 @@ from httpx import AsyncClient
 
 @pytest.mark.asyncio
 async def test_health_check(client: AsyncClient):
-    """Test that the API root returns a successful response."""
-    response = await client.get("/")
+    """Test that the health endpoint returns a successful response."""
+    response = await client.get("/health")
     assert response.status_code == 200
     data = response.json()
-    assert "message" in data or "status" in data
+    assert "status" in data
+    assert data["status"] == "ok"
 
 
 @pytest.mark.asyncio
 async def test_openapi_docs(client: AsyncClient):
     """Test that OpenAPI docs are accessible."""
-    response = await client.get("/docs")
+    response = await client.get("/api/v1/docs")
     assert response.status_code == 200
     assert "text/html" in response.headers.get("content-type", "")
 

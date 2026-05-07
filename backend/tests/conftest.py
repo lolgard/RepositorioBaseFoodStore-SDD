@@ -5,9 +5,9 @@ Provides test database session and client fixtures.
 import pytest
 from typing import AsyncGenerator
 
-from sqlmodel import SQLModel, create_engine
+from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 from httpx import AsyncClient, ASGITransport
 
 from app.main import app
@@ -17,10 +17,9 @@ from app.core.database import get_session
 @pytest.fixture(scope="function")
 async def test_engine() -> AsyncGenerator[AsyncEngine, None]:
     """Create a test in-memory SQLite engine."""
-    engine = create_engine(
+    engine = create_async_engine(
         "sqlite+aiosqlite:///:memory:",
         echo=True,
-        future=True,
     )
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
