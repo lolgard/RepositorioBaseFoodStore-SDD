@@ -32,10 +32,15 @@ async_session = async_sessionmaker(
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
     """
     Dependency for getting an async database session.
-    Yields an async session and closes it after use.
+    Commits on success, rolls back on exception, closes after use.
     """
     async with async_session() as session:
-        yield session
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
 
 
 async def init_db() -> None:

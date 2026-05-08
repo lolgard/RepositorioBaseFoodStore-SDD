@@ -22,7 +22,7 @@ class BaseRepository(Generic[T]):
         result = await self.session.execute(
             select(self.model).where(
                 self.model.id == id,
-                self.model.eliminado_en == None,  # noqa: E711
+                self.model.deleted_at.is_(None),
             )
         )
         return result.scalar_one_or_none()
@@ -31,7 +31,7 @@ class BaseRepository(Generic[T]):
         self, skip: int = 0, limit: int = 100, filters: Optional[dict] = None
     ) -> List[T]:
         """List entities with pagination. Excludes soft-deleted."""
-        query = select(self.model).where(self.model.eliminado_en == None)  # noqa: E711
+        query = select(self.model).where(self.model.deleted_at.is_(None))
 
         if filters:
             for field, value in filters.items():
@@ -44,7 +44,7 @@ class BaseRepository(Generic[T]):
 
     async def count(self, filters: Optional[dict] = None) -> int:
         """Count entities. Excludes soft-deleted."""
-        query = select(self.model).where(self.model.eliminado_en == None)  # noqa: E711
+        query = select(self.model).where(self.model.deleted_at.is_(None))
 
         if filters:
             for field, value in filters.items():
@@ -76,13 +76,13 @@ class BaseRepository(Generic[T]):
         return obj
 
     async def soft_delete(self, id: int) -> bool:
-        """Soft delete entity by setting eliminado_en."""
+        """Soft delete entity by setting deleted_at."""
         obj = await self.get_by_id(id)
         if not obj:
             return False
 
-        from datetime import datetime, timezone
-        obj.eliminado_en = datetime.now(timezone.utc)
+        from datetime import datetime
+        obj.deleted_at = datetime.utcnow()
         await self.session.flush()
         return True
 

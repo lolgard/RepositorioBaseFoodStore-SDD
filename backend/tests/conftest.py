@@ -44,6 +44,8 @@ async def test_session(test_engine) -> AsyncGenerator[AsyncSession, None]:
 @pytest.fixture(scope="function")
 async def client(test_session) -> AsyncGenerator[AsyncClient, None]:
     """Create a test client that uses the test session."""
+    # Disable rate limiting for tests
+    app.state.limiter.enabled = False
 
     async def override_get_session():
         yield test_session

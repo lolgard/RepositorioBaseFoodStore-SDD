@@ -44,7 +44,8 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 
 [tool.alembic]
-script_location = "alembic/versions"
+script_location = "alembic"
+version_locations = "alembic/versions"
 prepend_sys_path = "."
 version_path_separator = "os"
-sqlalchemy.url = "postgresql://user:password@localhost/foodstore"
+sqlalchemy.url = "%(DATABASE_URL)s"

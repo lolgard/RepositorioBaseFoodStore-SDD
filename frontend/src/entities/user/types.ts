@@ -6,7 +6,7 @@ export interface UserBase {
   email: string;
   first_name: string;
   last_name: string;
-  role: 'customer' | 'admin' | 'staff';
+  role: 'CLIENTE' | 'STAFF' | 'GESTOR' | 'ADMIN';
 }
 
 export interface UserCreate extends UserBase {
@@ -23,6 +23,7 @@ export interface UserUpdate {
 export interface UserResponse extends UserBase {
   id: number;
   is_active: boolean;
+  phone?: string;
   created_at: string;
   updated_at: string;
 }

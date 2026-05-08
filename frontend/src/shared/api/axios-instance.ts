@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/shared/store/auth-store';
+import { useToastStore } from '@/shared/store/toast-store';
 
 // Extend Axios config to include _retry flag
 interface RetryableAxiosRequestConfig extends InternalAxiosRequestConfig {
@@ -75,6 +76,40 @@ api.interceptors.response.use(
 
     return Promise.reject(error);
   }
+);
+
+// Response interceptor: Global HTTP error toasts
+// This runs BEFORE the 401 refresh interceptor (LIFO order).
+// For 401 errors: silently passes through (let the 401 handler deal with it).
+// For other errors: dispatches a toast notification, then re-throws.
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // 401 errors are handled by the existing refresh interceptor — skip toast
+    if (error.response?.status === 401) {
+      return Promise.reject(error);
+    }
+
+    // Network error (no response received)
+    if (!error.response) {
+      useToastStore.getState().addToast('Network error. Check your connection.', 'error');
+      return Promise.reject(error);
+    }
+
+    const status = error.response.status;
+    const message =
+      error.response.data?.detail ||
+      error.response.data?.title ||
+      'An unexpected error occurred';
+
+    if (status >= 500) {
+      useToastStore.getState().addToast('Server error. Please try again later.', 'error');
+    } else if (status >= 400) {
+      useToastStore.getState().addToast(message, 'error');
+    }
+
+    return Promise.reject(error);
+  },
 );
 
 export default api;
