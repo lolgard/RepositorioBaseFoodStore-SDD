@@ -1,0 +1,4 @@
+name: mercadopago-integration
+created_at: 2026-05-08
+status: proposed
+description: Integración con MercadoPago Orders API para procesamiento de pagos con webhooks IPN.

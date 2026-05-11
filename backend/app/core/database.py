@@ -10,15 +10,27 @@ from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async
 
 from app.core.config import settings
 
-# Convert postgresql:// to postgresql+asyncpg:// for async driver
-DATABASE_URL = settings.DATABASE_URL.replace(
-    "postgresql://", "postgresql+asyncpg://"
-)
+# Convert DATABASE_URL to async version if needed
+if settings.DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = settings.DATABASE_URL.replace(
+        "postgresql://", "postgresql+asyncpg://"
+    )
+elif settings.DATABASE_URL.startswith("sqlite://"):
+    DATABASE_URL = settings.DATABASE_URL.replace(
+        "sqlite://", "sqlite+aiosqlite://"
+    )
+else:
+    DATABASE_URL = settings.DATABASE_URL
 
 # Create async engine
+connect_args = {}
+if DATABASE_URL.startswith("sqlite"):
+    connect_args["check_same_thread"] = False
+
 engine: AsyncEngine = create_async_engine(
     DATABASE_URL,
     echo=settings.DEBUG,
+    connect_args=connect_args,
 )
 
 # Create async session maker

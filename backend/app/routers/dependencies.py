@@ -6,10 +6,13 @@ from typing import List, Optional
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
+from sqlmodel import select
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.core.config import settings
+from app.core.database import get_session
 from app.core.exceptions import ForbiddenError, UnauthorizedError
-from app.models.user import UserRole
+from app.models.user import User, UserRole
 
 # HTTP Bearer token scheme
 security = HTTPBearer(auto_error=False)
@@ -52,6 +55,22 @@ async def get_current_user_role(payload: dict = Depends(get_token_payload)) -> s
     if not role:
         raise UnauthorizedError("Invalid token: no role")
     return role
+
+
+async def get_current_user(
+    user_id: int = Depends(get_current_user_id),
+    session: AsyncSession = Depends(get_session),
+) -> User:
+    """Get the current authenticated user from the database."""
+    result = await session.execute(
+        select(User).where(User.id == user_id, User.deleted_at.is_(None))
+    )
+    user = result.scalar_one_or_none()
+    if not user:
+        raise UnauthorizedError("User not found")
+    if not user.is_active:
+        raise UnauthorizedError("User is deactivated")
+    return user
 
 
 def require_role(allowed_roles: List[UserRole]):

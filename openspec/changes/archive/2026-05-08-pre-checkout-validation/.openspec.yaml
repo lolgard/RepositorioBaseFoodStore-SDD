@@ -1,0 +1,4 @@
+name: pre-checkout-validation
+created_at: 2026-05-08
+status: proposed
+description: Validación de disponibilidad de stock y detección de cambios de precio al iniciar el checkout.

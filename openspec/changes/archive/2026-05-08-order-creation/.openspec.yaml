@@ -1,0 +1,4 @@
+name: order-creation
+created_at: 2026-05-08
+status: proposed
+description: Creación atómica de pedidos con Unit of Work, snapshots de precio y dirección, validación de stock y registro de historial de estados.

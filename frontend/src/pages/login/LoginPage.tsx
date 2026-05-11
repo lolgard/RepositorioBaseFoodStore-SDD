@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, Lock, LogIn, ArrowRight, ShoppingBasket, ShieldCheck } from 'lucide-react';
 import { useAuthStore } from '@/shared/store/auth-store';
 
 export default function LoginPage() {
@@ -14,73 +16,151 @@ export default function LoginPage() {
       await login({ email, password });
       navigate('/', { replace: true });
     } catch {
-      // Error is handled by store
+      // Error handles by store
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Iniciar Sesión
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            ¿No tenés cuenta?{' '}
-            <Link to="/register" className="font-medium text-primary-600 hover:text-primary-500">
-              Registrate
-            </Link>
-          </p>
+    <div className="fixed inset-0 flex bg-surface-custom-950 overflow-hidden">
+      {/* Left Pane - Branding & Inspiration */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-surface-custom-900 items-center justify-center p-12">
+        <div className="absolute inset-0 overflow-hidden">
+          <img 
+            src="https://images.unsplash.com/photo-1543353071-873f17a7a088?q=80&w=1200&auto=format&fit=crop" 
+            alt="Food background" 
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-950/90 to-surface-custom-950/100" />
         </div>
-
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md" role="alert">
-              {error}
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative z-10 max-w-lg space-y-8"
+        >
+          <div className="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center text-white shadow-2xl">
+            <ShoppingBasket size={32} />
+          </div>
+          <div className="space-y-4">
+            <h1 className="text-5xl font-bold text-white leading-tight">
+              Bienvenido a <br />
+              <span className="text-primary-400">FoodStore Premium</span>
+            </h1>
+            <p className="text-surface-custom-400 text-lg leading-relaxed">
+              Ingresá para gestionar tus pedidos y descubrir la mejor selección de productos frescos de la zona.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-6 pt-8">
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2 text-primary-400">
+                <ShieldCheck size={20} />
+                <span className="font-bold text-sm uppercase tracking-widest">Seguro</span>
+              </div>
+              <p className="text-xs text-surface-custom-500">Protección de datos de grado bancario.</p>
             </div>
-          )}
-
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">Email</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); clearError(); }}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                placeholder="Email"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">Contraseña</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => { setPassword(e.target.value); clearError(); }}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                placeholder="Contraseña"
-              />
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2 text-primary-400">
+                <ArrowRight size={20} />
+                <span className="font-bold text-sm uppercase tracking-widest">Rápido</span>
+              </div>
+              <p className="text-xs text-surface-custom-500">Login en un solo paso y checkout veloz.</p>
             </div>
           </div>
+        </motion.div>
+      </div>
 
-          <div>
+      {/* Right Pane - Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 md:p-24 bg-surface-custom-950">
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="w-full max-w-md space-y-10"
+        >
+          <div className="space-y-2 text-center lg:text-left">
+            <h2 className="text-4xl font-bold tracking-tight text-white">Iniciar Sesión</h2>
+            <p className="text-surface-custom-500 font-medium">
+              Es un gusto tenerte de vuelta.
+            </p>
+          </div>
+
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <AnimatePresence>
+              {error && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="bg-red-400/10 border border-red-400/20 text-red-400 px-4 py-3 rounded-2xl text-sm font-medium"
+                >
+                  {error}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-surface-custom-500 ml-1">Email</label>
+                <div className="relative group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-surface-custom-600 group-focus-within:text-primary-400 transition-colors">
+                    <Mail size={20} />
+                  </div>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); clearError(); }}
+                    placeholder="ejemplo@correo.com"
+                    className="input-premium pl-12"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center ml-1">
+                  <label className="text-sm font-bold text-surface-custom-500">Contraseña</label>
+                  <a href="#" className="text-xs font-bold text-primary-400 hover:text-primary-300">Olvidé mi clave</a>
+                </div>
+                <div className="relative group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-surface-custom-600 group-focus-within:text-primary-400 transition-colors">
+                    <Lock size={20} />
+                  </div>
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => { setPassword(e.target.value); clearError(); }}
+                    placeholder="••••••••"
+                    className="input-premium pl-12"
+                  />
+                </div>
+              </div>
+            </div>
+
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full btn-premium gradient-primary text-white py-4 flex items-center justify-center space-x-2 shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 disabled:opacity-50"
             >
-              {isLoading ? 'Ingresando...' : 'Ingresar'}
+              {isLoading ? (
+                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  <span>Ingresar al Sistema</span>
+                  <LogIn size={20} />
+                </>
+              )}
             </button>
-          </div>
-        </form>
+          </form>
+
+          <p className="text-center text-sm text-surface-custom-500">
+            ¿No tenés una cuenta?{' '}
+            <Link to="/register" className="font-bold text-primary-400 hover:text-primary-300 hover:underline">
+              Registrate gratis
+            </Link>
+          </p>
+        </motion.div>
       </div>
     </div>
   );

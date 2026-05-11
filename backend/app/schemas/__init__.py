@@ -1,4 +1,4 @@
-"""Pydantic v2 schemas for Food Store."""
+﻿"""Pydantic v2 schemas for Food Store."""
 from app.schemas.auth import (
     UserCreate,
     UserLogin,
@@ -13,6 +13,16 @@ from app.schemas.category import (
     CategoryResponse,
     CategoryTreeNode,
 )
+from app.schemas.product import (
+    ProductCreate,
+    ProductUpdate,
+    ProductResponse,
+)
+from app.schemas.delivery_address import (
+    AddressCreate,
+    AddressUpdate,
+    AddressResponse,
+)
 
 __all__ = [
     "UserCreate",
@@ -25,4 +35,10 @@ __all__ = [
     "CategoryUpdate",
     "CategoryResponse",
     "CategoryTreeNode",
+    "ProductCreate",
+    "ProductUpdate",
+    "ProductResponse",
+    "AddressCreate",
+    "AddressUpdate",
+    "AddressResponse",
 ]

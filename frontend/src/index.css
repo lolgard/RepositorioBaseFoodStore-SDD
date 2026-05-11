@@ -1,22 +1,72 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
-  color-scheme: light dark;
+@layer base {
+  :root {
+    --primary: 16 185 129;
+    --secondary: 245 158 11;
+    --surface: 248 250 252;
+  }
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  body {
+    background-color: #0f172a; /* surface-custom-900 */
+    color: theme('colors.surface-custom.200');
+    @apply antialiased;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+    @apply font-semibold tracking-tight;
+    color: theme('colors.white');
+  }
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
+@layer components {
+  .glass {
+    @apply bg-surface-custom-900/60 backdrop-blur-xl border border-white/10;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  }
+
+  .glass-dark {
+    @apply bg-black/60 backdrop-blur-xl border border-white/5;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  .btn-premium {
+    @apply relative overflow-hidden transition-all duration-300 active:scale-95 px-6 py-3 rounded-xl font-bold;
+  }
+
+  .btn-premium::after {
+    @apply content-[''] absolute inset-0 bg-white/10 opacity-0 transition-opacity duration-300;
+  }
+
+  .btn-premium:hover::after {
+    @apply opacity-100;
+  }
+
+  .card-premium {
+    @apply bg-surface-custom-800/40 backdrop-blur-md rounded-3xl border border-white/5 transition-all duration-500 hover:border-primary-500/30 hover:bg-surface-custom-800/60;
+    box-shadow: theme('boxShadow.premium');
+  }
+
+  .input-premium {
+    @apply w-full px-4 py-3 bg-surface-custom-900/50 border border-white/10 rounded-xl transition-all duration-300 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 focus:bg-surface-custom-900 outline-none text-white placeholder:text-surface-custom-500;
+  }
+}
+
+.gradient-primary {
+  @apply bg-gradient-to-br from-primary-400 to-primary-600;
+}
+
+.gradient-secondary {
+  @apply bg-gradient-to-br from-secondary-400 to-secondary-500;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-primary-200;
 }

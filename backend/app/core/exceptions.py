@@ -95,6 +95,18 @@ class ValidationError(AppException):
         )
 
 
+class BadRequestError(AppException):
+    """Bad request (e.g., validation business rule)."""
+
+    def __init__(self, detail: str = "Bad request"):
+        super().__init__(
+            status_code=400,
+            title="Bad Request",
+            detail=detail,
+            type_=f"https://example.com/probs/bad-request",
+        )
+
+
 class ConflictError(AppException):
     """Resource conflict (e.g., duplicate)."""
 

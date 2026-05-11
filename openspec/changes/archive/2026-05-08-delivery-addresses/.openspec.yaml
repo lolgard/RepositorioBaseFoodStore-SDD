@@ -1,0 +1,4 @@
+name: delivery-addresses
+created_at: 2026-05-08
+status: proposed
+description: CRUD de direcciones de entrega, marcado de dirección predeterminada y validación de ownership.

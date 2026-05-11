@@ -9,6 +9,9 @@ from app.repositories.refresh_token_repository import RefreshTokenRepository
 from app.repositories.user_repository import UserRepository
 from app.routers.dependencies import get_current_user_id
 from app.schemas.auth import (
+    PasswordChangeRequest,
+    PasswordChangeResponse,
+    ProfileUpdate,
     RefreshRequest,
     RegisterResponse,
     TokenResponse,
@@ -94,3 +97,27 @@ async def get_me(
     """Get the currently authenticated user's profile."""
     user = await auth_service.get_current_user(user_id)
     return UserResponse.model_validate(user)
+
+
+@router.put("/me")
+async def update_profile(
+    data: ProfileUpdate,
+    user_id: int = Depends(get_current_user_id),
+    auth_service: AuthService = Depends(_get_auth_service),
+):
+    """Update the currently authenticated user's profile."""
+    user = await auth_service.update_profile(user_id, data)
+    return UserResponse.model_validate(user)
+
+
+@router.put("/me/password")
+async def change_password(
+    data: PasswordChangeRequest,
+    user_id: int = Depends(get_current_user_id),
+    auth_service: AuthService = Depends(_get_auth_service),
+):
+    """Change password. Revokes all other refresh tokens."""
+    await auth_service.change_password(user_id, data)
+    return PasswordChangeResponse(
+        message="Password changed successfully. All other sessions have been logged out."
+    )

@@ -46,7 +46,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'Orders',
     path: '/orders',
     icon: '📋',
-    allowedRoles: ['GESTOR', 'ADMIN'],
+    allowedRoles: ['CLIENTE', 'GESTOR', 'ADMIN'],
   },
   {
     label: 'Users',
@@ -55,9 +55,33 @@ export const NAV_ITEMS: NavItem[] = [
     allowedRoles: ['ADMIN'],
   },
   {
+    label: 'Addresses',
+    path: '/addresses',
+    icon: '📍',
+    allowedRoles: ['CLIENTE', 'STAFF', 'GESTOR', 'ADMIN'],
+  },
+  {
     label: 'Profile',
     path: '/profile',
     allowedRoles: ['CLIENTE', 'STAFF', 'GESTOR', 'ADMIN'],
+  },
+  {
+    label: 'Cart',
+    path: '/cart',
+    icon: '🛒',
+    allowedRoles: ['CLIENTE', 'STAFF', 'GESTOR', 'ADMIN'],
+  },
+  {
+    label: 'System Config',
+    path: '/admin/config',
+    icon: '\u2699\uFE0F',
+    allowedRoles: ['ADMIN'],
+  },
+  {
+    label: 'Dashboard',
+    path: '/admin/metrics',
+    icon: '\uD83D\uDCCA',
+    allowedRoles: ['ADMIN'],
   },
 ];
 

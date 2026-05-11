@@ -96,3 +96,6 @@ Este proyecto usa **OPSX** (Spec-Driven Development):
 ## 🤝 Team
 
 Food Store Development Team
+
+Email: admin@foodstore.com
+Password: admin123!

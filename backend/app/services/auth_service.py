@@ -21,6 +21,8 @@ from app.models.user import User, UserRole
 from app.repositories.refresh_token_repository import RefreshTokenRepository
 from app.repositories.user_repository import UserRepository
 from app.schemas.auth import (
+    PasswordChangeRequest,
+    ProfileUpdate,
     TokenResponse,
     UserCreate,
     UserLogin,
@@ -196,6 +198,42 @@ class AuthService:
         if not user.is_active:
             raise ForbiddenError("Account is disabled")
         return user
+
+    async def update_profile(self, user_id: int, data: ProfileUpdate) -> User:
+        """Update user profile fields. Only updates provided fields."""
+        user = await self.get_current_user(user_id)
+
+        update_data = data.model_dump(exclude_unset=True)
+        if not update_data:
+            return user
+
+        return await self.user_repo.update(user_id, update_data)
+
+    async def change_password(
+        self, user_id: int, data: PasswordChangeRequest
+    ) -> None:
+        """
+        Change user password.
+        Verifies current password, then hashes new one.
+        Revokes ALL refresh tokens for the user (forces re-login).
+        """
+        user = await self.get_current_user(user_id)
+
+        # Verify current password
+        if not self._verify_password(data.current_password, user.password_hash):
+            raise UnauthorizedError("Current password is incorrect")
+
+        # Check new password != current password
+        if data.current_password == data.new_password:
+            raise ConflictError("New password must be different from current password")
+
+        # Hash and set new password
+        updated = await self.user_repo.update(
+            user_id, {"password_hash": self._hash_password(data.new_password)}
+        )
+
+        # Revoke ALL refresh tokens (security: log out other sessions)
+        await self.refresh_token_repo.revoke_all_for_user(user_id)
 
     # --- Internal helpers ---
 

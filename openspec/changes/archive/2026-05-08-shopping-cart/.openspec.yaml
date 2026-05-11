@@ -1,0 +1,4 @@
+name: shopping-cart
+created_at: 2026-05-08
+status: proposed
+description: Carrito de compras client-side con Zustand + localStorage, personalización de ingredientes y resumen.

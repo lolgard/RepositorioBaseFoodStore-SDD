@@ -1,0 +1,4 @@
+name: client-profile
+created_at: 2026-05-08
+status: proposed
+description: Visualización y edición del perfil del cliente, y cambio de contraseña con invalidación de refresh tokens.

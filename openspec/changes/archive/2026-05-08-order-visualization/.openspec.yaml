@@ -1,0 +1,4 @@
+name: order-visualization
+created_at: 2026-05-08
+status: proposed
+description: Listado de pedidos del cliente, detalle completo con snapshots e historial, y listado para Gestor/Admin con filtros.

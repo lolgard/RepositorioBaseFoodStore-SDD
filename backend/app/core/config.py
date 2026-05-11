@@ -37,6 +37,11 @@ class Settings(BaseSettings):
     # App
     DEBUG: bool = False
     API_V1_STR: str = "/api/v1"
+    APP_URL: str = "http://localhost:5173"
+    API_URL: str = "http://localhost:8000"
+
+    # MercadoPago
+    MERCADOPAGO_ACCESS_TOKEN: str = ""
 
 
 settings = Settings()

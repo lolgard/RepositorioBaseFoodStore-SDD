@@ -13,6 +13,7 @@ from app.core.config import settings
 from app.core.database import init_db
 from app.core.exceptions import (
     AppException,
+    BadRequestError,
     NotFoundError,
     UnauthorizedError,
     ForbiddenError,
@@ -21,7 +22,7 @@ from app.core.exceptions import (
     RateLimitError,
 )
 from app.core.rate_limit import limiter
-from app.routers import auth_router, categories_router
+from app.routers import auth_router, categories_router, ingredients_router, products_router, delivery_addresses_router, orders_router, checkout_router, payments_router, system_config_router, users_router, metrics_router
 
 
 def create_app() -> FastAPI:
@@ -53,6 +54,15 @@ def create_app() -> FastAPI:
     # Register routers
     app.include_router(auth_router)
     app.include_router(categories_router)
+    app.include_router(ingredients_router)
+    app.include_router(products_router)
+    app.include_router(delivery_addresses_router)
+    app.include_router(orders_router)
+    app.include_router(checkout_router)
+    app.include_router(payments_router)
+    app.include_router(system_config_router)
+    app.include_router(users_router)
+    app.include_router(metrics_router)
 
     # Register exception handlers
     @app.exception_handler(AppException)
@@ -137,5 +147,25 @@ app = create_app()
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize database on startup."""
+    """Initialize database and create default configs on startup."""
     await init_db()
+
+    from app.core.database import engine, async_session
+    from sqlmodel import select
+    from app.models.system_config import SystemConfig
+
+    defaults = [
+        ("store_name", "FoodStore", "Store display name"),
+        ("store_email", "contact@foodstore.com", "Store contact email"),
+        ("delivery_fee", "5.00", "Default delivery fee"),
+        ("max_addresses_per_user", "5", "Maximum delivery addresses per user"),
+        ("order_confirmation_message", "Your order has been confirmed!", "Message shown after order confirmation"),
+    ]
+    async with async_session() as session:
+        for key, value, desc in defaults:
+            result = await session.execute(select(SystemConfig).where(SystemConfig.key == key))
+            existing = result.scalar_one_or_none()
+            if not existing:
+                session.add(SystemConfig(key=key, value=value, description=desc))
+        await session.commit()
+

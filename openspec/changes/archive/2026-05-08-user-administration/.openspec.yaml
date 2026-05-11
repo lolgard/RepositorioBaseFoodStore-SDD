@@ -1,0 +1,4 @@
+name: user-administration
+created_at: 2026-05-08
+status: proposed
+description: Panel de listado de usuarios, edición de datos y roles, y desactivación lógica de usuarios.

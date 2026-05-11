@@ -58,3 +58,24 @@ class RefreshRequest(BaseModel):
     """Schema for refresh token request."""
 
     refresh_token: str
+
+
+class ProfileUpdate(BaseModel):
+    """Schema for profile update request. All fields optional."""
+
+    first_name: str | None = Field(default=None, min_length=1, max_length=100)
+    last_name: str | None = Field(default=None, min_length=1, max_length=100)
+    phone: str | None = Field(default=None, max_length=20)
+
+
+class PasswordChangeRequest(BaseModel):
+    """Schema for password change request."""
+
+    current_password: str
+    new_password: str = Field(min_length=8, max_length=128)
+
+
+class PasswordChangeResponse(BaseModel):
+    """Schema for password change response."""
+
+    message: str
