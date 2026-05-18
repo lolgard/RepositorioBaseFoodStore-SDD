@@ -2,6 +2,7 @@
 FastAPI application entry point.
 Configures the app, middleware, exception handlers, and routers.
 """
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -13,16 +14,29 @@ from app.core.config import settings
 from app.core.database import init_db
 from app.core.exceptions import (
     AppException,
-    BadRequestError,
     NotFoundError,
     UnauthorizedError,
     ForbiddenError,
     ValidationError,
-    ConflictError,
     RateLimitError,
 )
 from app.core.rate_limit import limiter
-from app.routers import auth_router, categories_router, ingredients_router, products_router, delivery_addresses_router, orders_router, checkout_router, payments_router, system_config_router, users_router, metrics_router
+from app.routers import (
+    auth_router,
+    categories_router,
+    ingredients_router,
+    products_router,
+    delivery_addresses_router,
+    orders_router,
+    checkout_router,
+    payments_router,
+    system_config_router,
+    users_router,
+    metrics_router,
+    notifications_router,
+    cart_router,
+    coupons_router,
+)
 
 
 def create_app() -> FastAPI:
@@ -63,6 +77,9 @@ def create_app() -> FastAPI:
     app.include_router(system_config_router)
     app.include_router(users_router)
     app.include_router(metrics_router)
+    app.include_router(notifications_router)
+    app.include_router(cart_router)
+    app.include_router(coupons_router)
 
     # Register exception handlers
     @app.exception_handler(AppException)
@@ -159,13 +176,18 @@ async def startup_event():
         ("store_email", "contact@foodstore.com", "Store contact email"),
         ("delivery_fee", "5.00", "Default delivery fee"),
         ("max_addresses_per_user", "5", "Maximum delivery addresses per user"),
-        ("order_confirmation_message", "Your order has been confirmed!", "Message shown after order confirmation"),
+        (
+            "order_confirmation_message",
+            "Your order has been confirmed!",
+            "Message shown after order confirmation",
+        ),
     ]
     async with async_session() as session:
         for key, value, desc in defaults:
-            result = await session.execute(select(SystemConfig).where(SystemConfig.key == key))
+            result = await session.execute(
+                select(SystemConfig).where(SystemConfig.key == key)
+            )
             existing = result.scalar_one_or_none()
             if not existing:
                 session.add(SystemConfig(key=key, value=value, description=desc))
         await session.commit()
-

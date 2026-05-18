@@ -199,4 +199,16 @@ Antes de usar `openspec-archive-change`, verificá:
 
 ---
 
+## 7. Gestión de Sincronización de Memoria (Engram)
+- **Post-Cambio:** Tras cada commit o cambio significativo, ejecutar `engram sync --import` para asegurar que los nuevos aprendizajes se indexen y se exporten los cambios locales.
+- **Post-Pull:** Tras sincronizar cambios del repositorio remoto (`git pull`), ejecutar `engram sync --import` para actualizar la base de conocimientos local con los nuevos chunks del equipo.
+
+## 8. Idioma de Interacción
+- El bot debe responder **siempre en español** (Rioplatense Spanish/Voseo), manteniendo un tono de Senior Architect apasionado y directo.
+
+## 9. Consistencia de Contexto
+- Antes de iniciar cualquier tarea, verificar que el proyecto activo en Engram sea `FoodStore-SDD` para garantizar que la memoria recuperada sea la correcta y no haya contaminación de contexto.
+
+---
+
 **Fin de las directivas. ¡Cumplilas o te revoco los permisos!** 🚀

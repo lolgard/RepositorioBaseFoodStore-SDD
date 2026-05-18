@@ -24,6 +24,44 @@
     @apply font-semibold tracking-tight;
     color: theme('colors.white');
   }
+
+  /* ── Global form element reset ───────────────────────────────────────────
+     Browsers apply a white background + dark text to inputs by default.
+     This reset enforces the dark design system across ALL form elements
+     without having to touch every individual component. */
+  input,
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="date"],
+  input[type="time"],
+  textarea,
+  select {
+    background-color: rgb(15 23 42 / 0.5); /* surface-custom-900/50 */
+    color: #f8fafc; /* white-ish */
+    border-color: rgb(255 255 255 / 0.1);
+    -webkit-text-fill-color: #f8fafc; /* override Chrome autofill text */
+  }
+
+  /* Autofill override — Chrome forces its own yellow/blue background */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #0f172a inset !important;
+    -webkit-text-fill-color: #f8fafc !important;
+    caret-color: #f8fafc;
+  }
+
+  /* Placeholder color */
+  ::placeholder {
+    color: rgb(100 116 139 / 0.7); /* surface-custom-500 */
+  }
 }
 
 @layer components {
@@ -70,3 +108,19 @@
 .text-gradient {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-primary-200;
 }
+
+/* Sleek custom scrollbars for navigation structures */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+

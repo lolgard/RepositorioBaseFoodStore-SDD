@@ -34,13 +34,13 @@ export async function getSalesEvolution(days: number = 30): Promise<SalesPoint[]
   return response.data;
 }
 
-export async function getTopProducts(limit: number = 10): Promise<TopProduct[]> {
-  const response = await api.get<TopProduct[]>('/admin/metrics/top-products', { params: { limit } });
+export async function getTopProducts(limit: number = 10, days?: number): Promise<TopProduct[]> {
+  const response = await api.get<TopProduct[]>('/admin/metrics/top-products', { params: { limit, days } });
   return response.data;
 }
 
-export async function getOrdersByStatus(): Promise<OrderStatusCount[]> {
-  const response = await api.get<OrderStatusCount[]>('/admin/metrics/orders-by-status');
+export async function getOrdersByStatus(days?: number): Promise<OrderStatusCount[]> {
+  const response = await api.get<OrderStatusCount[]>('/admin/metrics/orders-by-status', { params: { days } });
   return response.data;
 }
 

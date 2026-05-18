@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ChevronLeft, Save, X, MapPin, Info } from 'lucide-react';
 import { useToastStore } from '@/shared/store/toast-store';
 import { createAddress, getAddress, updateAddress } from '@/shared/api/address-api';
 import type { AddressCreate, AddressUpdate } from '@/entities/address/types';
@@ -54,7 +55,7 @@ export default function AddressFormPage() {
         });
       })
       .catch((err) => {
-        const msg = err?.response?.data?.detail || 'Address not found';
+        const msg = err?.response?.data?.detail || 'Dirección no encontrada';
         setError(msg);
         addToast(msg, 'error');
       })
@@ -93,14 +94,14 @@ export default function AddressFormPage() {
 
       if (isEditing) {
         await updateAddress(Number(id), payload as AddressUpdate);
-        addToast('Address updated successfully', 'success');
+        addToast('Dirección actualizada correctamente', 'success');
       } else {
         await createAddress(payload as AddressCreate);
-        addToast('Address created successfully', 'success');
+        addToast('Dirección creada correctamente', 'success');
       }
       navigate('/addresses');
     } catch (err: any) {
-      const message = err?.response?.data?.detail || 'Operation failed';
+      const message = err?.response?.data?.detail || 'Error en la operación';
       setError(message);
       addToast(message, 'error');
     } finally {
@@ -110,40 +111,47 @@ export default function AddressFormPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-2xl mx-auto">
-          <p className="text-gray-500">Loading...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="w-8 h-8 border-4 border-primary-500/20 border-t-primary-500 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-6">
-          <button
-            type="button"
-            onClick={() => navigate('/addresses')}
-            className="text-sm text-blue-600 hover:text-blue-800 mb-2 inline-block"
-          >
-            &larr; Back to Addresses
-          </button>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {isEditing ? 'Edit Address' : 'Add Address'}
-          </h1>
+    <div className="p-6 max-w-2xl mx-auto space-y-8">
+      <div className="flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => navigate('/addresses')}
+          className="group flex items-center gap-1 text-surface-custom-400 hover:text-white transition-colors"
+        >
+          <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+          <span className="text-sm font-bold uppercase tracking-widest">Volver</span>
+        </button>
+        <div className="p-2 bg-primary-500/10 rounded-xl border border-primary-500/20 text-primary-400">
+          <MapPin size={24} />
         </div>
+      </div>
 
-        {error && (
-          <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3">
-            <p className="text-sm text-red-700">{error}</p>
-          </div>
-        )}
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold text-white tracking-tight">
+          {isEditing ? 'Editar Dirección' : 'Nueva Dirección'}
+        </h1>
+        <p className="text-surface-custom-400">Ingresá los datos de entrega para tus pedidos.</p>
+      </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
-          <div>
-            <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1">
-              Street *
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-center gap-3 text-red-400">
+          <X size={20} />
+          <p className="text-sm font-medium">{error}</p>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="card-premium p-8 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2">
+            <label htmlFor="street" className="block text-xs font-bold text-surface-custom-300 uppercase tracking-widest mb-2 ml-1">
+              Calle *
             </label>
             <input
               type="text"
@@ -153,14 +161,13 @@ export default function AddressFormPage() {
               maxLength={200}
               value={formData.street}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g. Av. Corrientes"
+              className="input-premium"
+              placeholder="Ej. Av. de Mayo"
             />
           </div>
-
           <div>
-            <label htmlFor="street_number" className="block text-sm font-medium text-gray-700 mb-1">
-              Street Number *
+            <label htmlFor="street_number" className="block text-xs font-bold text-surface-custom-300 uppercase tracking-widest mb-2 ml-1">
+              Número *
             </label>
             <input
               type="text"
@@ -170,83 +177,85 @@ export default function AddressFormPage() {
               maxLength={20}
               value={formData.street_number}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g. 1234"
+              className="input-premium"
+              placeholder="1234"
             />
           </div>
+        </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
-                City *
-              </label>
-              <input
-                type="text"
-                id="city"
-                name="city"
-                required
-                maxLength={100}
-                value={formData.city}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="e.g. Buenos Aires"
-              />
-            </div>
-            <div>
-              <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
-                State *
-              </label>
-              <input
-                type="text"
-                id="state"
-                name="state"
-                required
-                maxLength={100}
-                value={formData.state}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="e.g. CABA"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="zip_code" className="block text-sm font-medium text-gray-700 mb-1">
-                ZIP Code *
-              </label>
-              <input
-                type="text"
-                id="zip_code"
-                name="zip_code"
-                required
-                maxLength={20}
-                value={formData.zip_code}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="e.g. C1000"
-              />
-            </div>
-            <div>
-              <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
-                Country
-              </label>
-              <input
-                type="text"
-                id="country"
-                name="country"
-                maxLength={100}
-                value={formData.country}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-          </div>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="additional_info" className="block text-sm font-medium text-gray-700 mb-1">
-              Additional Info
+            <label htmlFor="city" className="block text-xs font-bold text-surface-custom-300 uppercase tracking-widest mb-2 ml-1">
+              Ciudad *
             </label>
+            <input
+              type="text"
+              id="city"
+              name="city"
+              required
+              maxLength={100}
+              value={formData.city}
+              onChange={handleChange}
+              className="input-premium"
+              placeholder="Ej. Córdoba"
+            />
+          </div>
+          <div>
+            <label htmlFor="state" className="block text-xs font-bold text-surface-custom-300 uppercase tracking-widest mb-2 ml-1">
+              Provincia *
+            </label>
+            <input
+              type="text"
+              id="state"
+              name="state"
+              required
+              maxLength={100}
+              value={formData.state}
+              onChange={handleChange}
+              className="input-premium"
+              placeholder="Ej. Córdoba"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label htmlFor="zip_code" className="block text-xs font-bold text-surface-custom-300 uppercase tracking-widest mb-2 ml-1">
+              Código Postal *
+            </label>
+            <input
+              type="text"
+              id="zip_code"
+              name="zip_code"
+              required
+              maxLength={20}
+              value={formData.zip_code}
+              onChange={handleChange}
+              className="input-premium"
+              placeholder="5000"
+            />
+          </div>
+          <div>
+            <label htmlFor="country" className="block text-xs font-bold text-surface-custom-300 uppercase tracking-widest mb-2 ml-1">
+              País
+            </label>
+            <input
+              type="text"
+              id="country"
+              name="country"
+              maxLength={100}
+              value={formData.country}
+              onChange={handleChange}
+              className="input-premium"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="additional_info" className="block text-xs font-bold text-surface-custom-300 uppercase tracking-widest mb-2 ml-1">
+            Información Adicional
+          </label>
+          <div className="relative">
             <input
               type="text"
               id="additional_info"
@@ -254,43 +263,53 @@ export default function AddressFormPage() {
               maxLength={500}
               value={formData.additional_info}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g. Apartment 3B, near the park"
+              className="input-premium pl-10"
+              placeholder="Ej. Portón negro, timbre B"
             />
+            <Info size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-custom-500" />
           </div>
+        </div>
 
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/5">
+          <div className="relative flex items-center">
             <input
               type="checkbox"
               id="is_default"
               name="is_default"
               checked={formData.is_default}
               onChange={handleChange}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="w-5 h-5 rounded-lg border-white/10 bg-surface-custom-800 text-primary-500 focus:ring-primary-500 transition-all cursor-pointer"
             />
-            <label htmlFor="is_default" className="text-sm text-gray-700">
-              Set as default address
-            </label>
           </div>
+          <label htmlFor="is_default" className="text-sm font-medium text-surface-custom-300 cursor-pointer">
+            Establecer como dirección predeterminada
+          </label>
+        </div>
 
-          <div className="flex gap-3 pt-2">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium disabled:opacity-50"
-            >
-              {isSubmitting ? 'Saving...' : isEditing ? 'Update Address' : 'Create Address'}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/addresses')}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
+        <div className="flex gap-4 pt-4">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="btn-premium flex-1 flex items-center justify-center gap-2"
+          >
+            {isSubmitting ? (
+              <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            ) : (
+              <>
+                <Save size={18} />
+                <span>{isEditing ? 'Actualizar' : 'Crear Dirección'}</span>
+              </>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/addresses')}
+            className="px-6 py-3 border border-white/10 text-white rounded-2xl hover:bg-white/5 transition-all text-sm font-black uppercase tracking-widest"
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

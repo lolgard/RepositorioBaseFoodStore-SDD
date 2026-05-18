@@ -91,3 +91,35 @@ def require_role(allowed_roles: List[UserRole]):
         return role
 
     return role_checker
+
+
+async def get_current_user_ws(
+    token: Optional[str] = None,
+    session: AsyncSession = Depends(get_session),
+) -> User:
+    """Authentication dependency for WebSockets using a 'token' query parameter."""
+    if not token:
+        # In WS we don't raise HTTP exceptions as they won't be seen by the client during handshake well
+        # but FastAPI handles this by closing the connection with 403
+        raise HTTPException(status_code=403, detail="Token missing")
+
+    try:
+        payload = jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM],
+        )
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(status_code=403, detail="Invalid token")
+        
+        result = await session.execute(
+            select(User).where(User.id == int(user_id), User.deleted_at.is_(None))
+        )
+        user = result.scalar_one_or_none()
+        if not user or not user.is_active:
+            raise HTTPException(status_code=403, detail="User not found or inactive")
+        
+        return user
+    except JWTError:
+        raise HTTPException(status_code=403, detail="Invalid or expired token")

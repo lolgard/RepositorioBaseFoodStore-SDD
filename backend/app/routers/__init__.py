@@ -10,5 +10,10 @@ from app.routers.payments import router as payments_router
 from app.routers.system_config import router as system_config_router
 from app.routers.users import router as users_router
 from app.routers.metrics import router as metrics_router
+from app.routers.cart import router as cart_router
+from app.routers.coupons import router as coupons_router
+from app.routers.notifications import router as notifications_router
 
-__all__ = ["auth_router", "categories_router", "ingredients_router", "products_router", "delivery_addresses_router", "orders_router", "checkout_router", "payments_router", "system_config_router", "users_router", "metrics_router"]
+__all__ = ["auth_router", "categories_router", "ingredients_router", "products_router", "delivery_addresses_router", "orders_router", "checkout_router", "payments_router", "system_config_router", "users_router", "metrics_router", "cart_router", "coupons_router", "notifications_router"]
+
+

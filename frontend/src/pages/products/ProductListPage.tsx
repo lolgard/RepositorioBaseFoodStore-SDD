@@ -18,6 +18,7 @@ import { useAuthStore } from '@/shared/store/auth-store';
 import { useToastStore } from '@/shared/store/toast-store';
 import { useCartStore } from '@/shared/store/cart-store';
 import { isRoleAtLeast } from '@/shared/config/roles';
+import ImageModal from '@/shared/ui/ImageModal';
 import type { Product, Category } from '@/entities/product/types';
 
 export default function ProductListPage() {
@@ -38,6 +39,8 @@ export default function ProductListPage() {
   const [maxPrice, setMaxPrice] = useState('');
   const [page, setPage] = useState(0);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [selectedProductImageUrl, setSelectedProductImageUrl] = useState('');
   const limit = 12;
 
   useEffect(() => {
@@ -231,7 +234,14 @@ export default function ProductListPage() {
               onClick={() => navigate(`/products/${p.id}`)}
             >
               {/* Product Image */}
-              <div className="relative h-56 overflow-hidden">
+              <div 
+                className="relative h-56 overflow-hidden cursor-zoom-in"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedProductImageUrl(p.image_url || 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=600&auto=format&fit=crop');
+                  setPreviewOpen(true);
+                }}
+              >
                 <img 
                   src={p.image_url || 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=600&auto=format&fit=crop'} 
                   alt={p.name}
@@ -309,17 +319,19 @@ export default function ProductListPage() {
                     )}
                   </div>
                   
-                  <button
-                    disabled={!p.available || p.stock === 0}
-                    onClick={(e) => handleAddToCart(e, p)}
-                    className={`p-3 rounded-xl transition-all shadow-lg ${
-                      p.available && p.stock > 0
-                        ? 'gradient-primary text-white hover:shadow-primary-500/20 hover:-translate-y-0.5 active:scale-95'
-                        : 'bg-white/5 text-surface-custom-600 cursor-not-allowed'
-                    }`}
-                  >
-                    <ShoppingBasket size={20} />
-                  </button>
+                  {!canManage && (
+                    <button
+                      disabled={!p.available || p.stock === 0}
+                      onClick={(e) => handleAddToCart(e, p)}
+                      className={`p-3 rounded-xl transition-all shadow-lg ${
+                        p.available && p.stock > 0
+                          ? 'gradient-primary text-white hover:shadow-primary-500/20 hover:-translate-y-0.5 active:scale-95'
+                          : 'bg-white/5 text-surface-custom-600 cursor-not-allowed'
+                      }`}
+                    >
+                      <ShoppingBasket size={20} />
+                    </button>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -414,6 +426,11 @@ export default function ProductListPage() {
           </div>
         )}
       </AnimatePresence>
+      <ImageModal
+        isOpen={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        src={selectedProductImageUrl || 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=600&auto=format&fit=crop'}
+      />
     </div>
   );
 }

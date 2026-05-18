@@ -1,12 +1,13 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, LogIn, ArrowRight, ShoppingBasket, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, LogIn, ArrowRight, ShoppingBasket, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '@/shared/store/auth-store';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading, error, clearError } = useAuthStore();
   const navigate = useNavigate();
 
@@ -127,13 +128,20 @@ export default function LoginPage() {
                     <Lock size={20} />
                   </div>
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     required
                     value={password}
                     onChange={(e) => { setPassword(e.target.value); clearError(); }}
                     placeholder="••••••••"
-                    className="input-premium pl-12"
+                    className="input-premium pl-12 pr-12"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-surface-custom-500 hover:text-white transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
               </div>
             </div>

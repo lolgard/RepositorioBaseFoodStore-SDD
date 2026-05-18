@@ -8,6 +8,7 @@ from app.models.product import Product
 from app.models.user import UserRole
 from app.repositories.order_repository import OrderRepository
 from app.repositories.product_repository import BaseRepository
+from app.core.websocket import manager
 from sqlmodel import select
 
 
@@ -118,6 +119,16 @@ class OrderStateMachineService:
         await self.order_repo.create_status_history(history)
 
         await self.session.refresh(order)
+        
+        # Notify user via WebSocket
+        message = {
+            "type": "ORDER_STATUS_CHANGED",
+            "order_id": order.id,
+            "status": order.status,
+            "message": f"Tu pedido #{order.id} ha cambiado a {order.status}"
+        }
+        await manager.send_personal_message(message, order.user_id)
+
         return order
 
     async def _restore_stock(self, order_id: int) -> None:

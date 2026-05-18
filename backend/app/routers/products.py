@@ -1,7 +1,7 @@
-﻿"""
+"""
 Products router: public queries and role-protected management.
 """
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query, Request
 
@@ -10,13 +10,12 @@ from app.core.rate_limit import limiter
 from app.models.user import UserRole
 from app.repositories.product_repository import ProductRepository
 from app.routers.dependencies import require_role
-from app.schemas.product import (
-    ProductCreate,
-    ProductResponse,
-    ProductUpdate,
-)
+from app.schemas.review import ReviewResponse
+from app.services.review_service import ReviewService
+from app.repositories.review_repository import ReviewRepository
+from sqlmodel.ext.asyncio.session import AsyncSession
 from app.services.product_service import ProductService
-
+from app.schemas.product import ProductResponse, ProductCreate, ProductUpdate
 router = APIRouter(prefix="/api/v1/products", tags=["products"])
 
 
@@ -72,6 +71,16 @@ async def get_product(
 ):
     """Get a single product by ID (authenticated users)."""
     return await service.get_by_id(product_id)
+
+
+@router.get("/{product_id}/reviews", response_model=List[ReviewResponse])
+async def get_product_reviews(
+    product_id: int,
+    session: AsyncSession = Depends(get_session),
+):
+    """Get all reviews for a product."""
+    service = ReviewService(review_repo=ReviewRepository(session))
+    return await service.list_by_product(product_id)
 
 
 # --- Role-protected endpoints (STAFF or ADMIN) ---

@@ -29,6 +29,7 @@ class User(SQLModel, table=True):
     password_hash: str = Field(max_length=255)
     role: UserRole = Field(default=UserRole.CLIENTE)
     is_active: bool = Field(default=True)
+    image_url: Optional[str] = Field(default=None, max_length=500)
 
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)

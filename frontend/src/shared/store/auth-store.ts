@@ -54,7 +54,14 @@ export const useAuthStore = create<AuthState>()(
             error: null,
           });
         } catch (err: any) {
-          const message = err.response?.data?.detail || err.response?.data?.title || 'Login failed';
+          let message = err.response?.data?.detail || err.response?.data?.title || 'Login failed';
+          if (message === 'Invalid email or password') {
+            message = 'El email o la contraseña son incorrectos. Por favor, verificá tus datos.';
+          } else if (message === 'Account is disabled') {
+            message = 'Esta cuenta se encuentra desactivada. Contactá al administrador.';
+          } else if (message === 'Login failed') {
+            message = 'Ocurrió un error al intentar iniciar sesión. Por favor, intentalo de nuevo.';
+          }
           set({ isLoading: false, error: message });
           throw err;
         }
@@ -70,7 +77,12 @@ export const useAuthStore = create<AuthState>()(
             error: null,
           });
         } catch (err: any) {
-          const message = err.response?.data?.detail || err.response?.data?.title || 'Registration failed';
+          let message = err.response?.data?.detail || err.response?.data?.title || 'Registration failed';
+          if (message === 'Email is already registered') {
+            message = 'El email ingresado ya se encuentra registrado. Probá con otro o iniciá sesión.';
+          } else if (message === 'Registration failed') {
+            message = 'Ocurrió un error al intentar registrar la cuenta. Por favor, intentalo de nuevo.';
+          }
           set({ isLoading: false, error: message });
           throw err;
         }

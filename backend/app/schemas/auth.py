@@ -32,6 +32,7 @@ class UserResponse(BaseModel):
     phone: str | None = None
     role: str
     is_active: bool
+    image_url: str | None = None
     created_at: datetime
     updated_at: datetime
 
@@ -66,6 +67,7 @@ class ProfileUpdate(BaseModel):
     first_name: str | None = Field(default=None, min_length=1, max_length=100)
     last_name: str | None = Field(default=None, min_length=1, max_length=100)
     phone: str | None = Field(default=None, max_length=20)
+    image_url: str | None = Field(default=None, max_length=500)
 
 
 class PasswordChangeRequest(BaseModel):

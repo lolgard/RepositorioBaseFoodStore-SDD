@@ -22,6 +22,7 @@ class UserResponse(BaseModel):
     last_name: str
     role: str
     is_active: bool
+    image_url: Optional[str] = None
     created_at: str
     updated_at: str
 
@@ -32,6 +33,7 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     role: Optional[str] = None
     is_active: Optional[bool] = None
+    image_url: Optional[str] = None
 
 
 @router.get("")
@@ -63,6 +65,7 @@ async def list_users(
             last_name=u.last_name,
             role=u.role,
             is_active=u.is_active,
+            image_url=u.image_url,
             created_at=str(u.created_at),
             updated_at=str(u.updated_at),
         )
@@ -87,6 +90,7 @@ async def get_user(
         last_name=user.last_name,
         role=user.role,
         is_active=user.is_active,
+        image_url=user.image_url,
         created_at=str(user.created_at),
         updated_at=str(user.updated_at),
     )
@@ -123,6 +127,7 @@ async def update_user(
         last_name=user.last_name,
         role=user.role,
         is_active=user.is_active,
+        image_url=user.image_url,
         created_at=str(user.created_at),
         updated_at=str(user.updated_at),
     )

@@ -19,6 +19,7 @@ export interface ProductCreate {
   price: number;
   stock?: number;
   available?: boolean;
+  image_url?: string | null;
   category_ids?: number[];
   ingredient_ids?: number[];
 }
@@ -29,6 +30,7 @@ export interface ProductUpdate {
   price?: number;
   stock?: number;
   available?: boolean;
+  image_url?: string | null;
   category_ids?: number[];
   ingredient_ids?: number[];
 }

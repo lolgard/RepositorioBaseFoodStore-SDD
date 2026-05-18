@@ -46,3 +46,28 @@ export async function getCurrentUser(): Promise<UserResponse> {
   const response = await api.get('/auth/me');
   return response.data;
 }
+
+export interface ProfileUpdate {
+  first_name: string;
+  last_name: string;
+  email: string;
+  image_url?: string | null;
+}
+
+export interface PasswordChangeRequest {
+  old_password: string;
+  new_password: string;
+}
+
+export async function updateCurrentUserProfile(data: ProfileUpdate): Promise<UserResponse> {
+  const response = await api.put('/auth/me', data);
+  return response.data;
+}
+
+export async function changeCurrentUserPassword(data: PasswordChangeRequest): Promise<{ message: string }> {
+  const response = await api.put('/auth/me/password', {
+    current_password: data.old_password,
+    new_password: data.new_password,
+  });
+  return response.data;
+}

@@ -1,8 +1,6 @@
-/**
- * CategoryFormPage — create or edit a category with parent selector dropdown.
- */
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { FolderTree, ChevronLeft, Save, Info, Link as LinkIcon, Layers } from 'lucide-react';
 import { useToastStore } from '@/shared/store/toast-store';
 import { getCategoryTree, getCategoryById, createCategory, updateCategory } from '@/shared/api/category-api';
 import type { CategoryCreate, CategoryTreeNode, CategoryUpdate } from '@/entities/category/types';
@@ -60,7 +58,7 @@ export default function CategoryFormPage() {
         });
       })
       .catch((err) => {
-        const msg = err?.response?.data?.detail || 'Category not found';
+        const msg = err?.response?.data?.detail || 'Categoría no encontrada';
         setError(msg);
         addToast(msg, 'error');
       })
@@ -98,14 +96,14 @@ export default function CategoryFormPage() {
 
       if (isEditing) {
         await updateCategory(Number(id), payload as CategoryUpdate);
-        addToast('Category updated successfully', 'success');
+        addToast('Categoría actualizada', 'success');
       } else {
         await createCategory(payload as CategoryCreate);
-        addToast('Category created successfully', 'success');
+        addToast('Categoría creada', 'success');
       }
       navigate('/categories');
     } catch (err: any) {
-      const message = err?.response?.data?.detail || 'Operation failed';
+      const message = err?.response?.data?.detail || 'Error en la operación';
       setError(message);
       addToast(message, 'error');
     } finally {
@@ -113,46 +111,50 @@ export default function CategoryFormPage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-2xl mx-auto">
-          <p className="text-gray-500">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <div className="w-8 h-8 border-4 border-primary-500/20 border-t-primary-500 rounded-full animate-spin" />
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <button
-            type="button"
-            onClick={() => navigate('/categories')}
-            className="text-sm text-blue-600 hover:text-blue-800 mb-2 inline-block"
-          >
-            &larr; Back to Categories
-          </button>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {isEditing ? 'Edit Category' : 'Add Category'}
-          </h1>
-        </div>
-
-        {/* Error message */}
-        {error && (
-          <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3">
-            <p className="text-sm text-red-700">{error}</p>
+    <div className="p-6 max-w-2xl mx-auto space-y-8">
+      {/* Header */}
+      <div className="space-y-4">
+        <button
+          onClick={() => navigate('/categories')}
+          className="group flex items-center gap-2 text-surface-custom-400 hover:text-white transition-colors"
+        >
+          <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+          <span className="text-sm font-bold uppercase tracking-widest">Volver a Categorías</span>
+        </button>
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-primary-500/10 rounded-2xl border border-primary-500/20 shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)]">
+            <FolderTree className="text-primary-400" size={32} />
           </div>
-        )}
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
-          {/* Name */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Name *
+            <h1 className="text-3xl font-black text-white italic uppercase tracking-tighter">
+              {isEditing ? 'Editar Categoría' : 'Nueva Categoría'}
+            </h1>
+            <p className="text-surface-custom-400 text-sm">Define la jerarquía y visualización del grupo.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Error message */}
+      {error && (
+        <div className="flex gap-3 p-4 bg-red-500/5 border border-red-500/20 rounded-2xl animate-in slide-in-from-top-2">
+          <Info className="text-red-400 shrink-0" size={20} />
+          <p className="text-sm text-red-400/80 italic">{error}</p>
+        </div>
+      )}
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="card-premium p-8 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2 md:col-span-2">
+            <label htmlFor="name" className="text-[10px] font-black uppercase tracking-[0.2em] text-surface-custom-500 ml-1">
+              Nombre de la Categoría *
             </label>
             <input
               type="text"
@@ -162,16 +164,14 @@ export default function CategoryFormPage() {
               maxLength={100}
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 
-                focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g. Beverages"
+              className="input-premium"
+              placeholder="Ej: Hamburguesas, Bebidas..."
             />
           </div>
 
-          {/* Description */}
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-              Description
+          <div className="space-y-2 md:col-span-2">
+            <label htmlFor="description" className="text-[10px] font-black uppercase tracking-[0.2em] text-surface-custom-500 ml-1">
+              Descripción
             </label>
             <textarea
               id="description"
@@ -180,34 +180,33 @@ export default function CategoryFormPage() {
               value={formData.description}
               onChange={handleChange}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 
-                focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Optional description"
+              className="input-premium h-24 resize-none"
+              placeholder="Añade una breve descripción para el catálogo..."
             />
           </div>
 
-          {/* Parent selector */}
-          <div>
-            <label htmlFor="parent_id" className="block text-sm font-medium text-gray-700 mb-1">
-              Parent Category
+          <div className="space-y-2">
+            <label htmlFor="parent_id" className="text-[10px] font-black uppercase tracking-[0.2em] text-surface-custom-500 ml-1">
+              Categoría Padre
             </label>
-            <select
-              id="parent_id"
-              name="parent_id"
-              value={formData.parent_id}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 
-                focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">None (root category)</option>
-              {renderParentOptions(treeOptions, formData.parent_id, isEditing ? Number(id) : undefined)}
-            </select>
+            <div className="relative">
+              <Layers className="absolute left-4 top-1/2 -translate-y-1/2 text-surface-custom-500 pointer-events-none" size={18} />
+              <select
+                id="parent_id"
+                name="parent_id"
+                value={formData.parent_id}
+                onChange={handleChange}
+                className="input-premium pl-12 appearance-none cursor-pointer"
+              >
+                <option value="">Ninguna (Nivel Raíz)</option>
+                {renderParentOptions(treeOptions, formData.parent_id, isEditing ? Number(id) : undefined)}
+              </select>
+            </div>
           </div>
 
-          {/* Sort order */}
-          <div>
-            <label htmlFor="sort_order" className="block text-sm font-medium text-gray-700 mb-1">
-              Sort Order
+          <div className="space-y-2">
+            <label htmlFor="sort_order" className="text-[10px] font-black uppercase tracking-[0.2em] text-surface-custom-500 ml-1">
+              Orden de Visualización
             </label>
             <input
               type="number"
@@ -216,73 +215,79 @@ export default function CategoryFormPage() {
               min={0}
               value={formData.sort_order}
               onChange={handleChange}
-              className="w-24 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 
-                focus:ring-blue-500 focus:border-blue-500"
+              className="input-premium"
             />
           </div>
 
-          {/* Image URL */}
-          <div>
-            <label htmlFor="image_url" className="block text-sm font-medium text-gray-700 mb-1">
-              Image URL
+          <div className="space-y-2 md:col-span-2">
+            <label htmlFor="image_url" className="text-[10px] font-black uppercase tracking-[0.2em] text-surface-custom-500 ml-1">
+              URL de la Imagen (Opcional)
             </label>
-            <input
-              type="url"
-              id="image_url"
-              name="image_url"
-              maxLength={500}
-              value={formData.image_url}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 
-                focus:ring-blue-500 focus:border-blue-500"
-              placeholder="https://example.com/image.png"
-            />
+            <div className="relative">
+              <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-surface-custom-500 pointer-events-none" size={18} />
+              <input
+                type="url"
+                id="image_url"
+                name="image_url"
+                maxLength={500}
+                value={formData.image_url}
+                onChange={handleChange}
+                className="input-premium pl-12"
+                placeholder="https://images.unsplash.com/..."
+              />
+            </div>
           </div>
+        </div>
 
-          {/* Active toggle */}
-          <div className="flex items-center gap-2">
+        <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+          <label className={`flex items-center gap-3 p-3 rounded-2xl border cursor-pointer transition-all ${
+            formData.is_active ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-white/5 border-white/10'
+          }`}>
             <input
               type="checkbox"
               id="is_active"
               name="is_active"
               checked={formData.is_active}
               onChange={handleChange}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="hidden"
             />
-            <label htmlFor="is_active" className="text-sm text-gray-700">
-              Active
-            </label>
-          </div>
+            <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all ${
+              formData.is_active ? 'bg-emerald-500 border-emerald-500' : 'border-surface-custom-700'
+            }`}>
+              {formData.is_active && <Save size={12} className="text-white" />}
+            </div>
+            <span className={`text-sm font-black uppercase tracking-widest ${formData.is_active ? 'text-emerald-400' : 'text-surface-custom-500'}`}>
+              Categoría Activa
+            </span>
+          </label>
 
-          {/* Submit */}
-          <div className="flex gap-3 pt-2">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
-                transition-colors text-sm font-medium disabled:opacity-50"
-            >
-              {isSubmitting ? 'Saving...' : isEditing ? 'Update Category' : 'Create Category'}
-            </button>
+          <div className="flex gap-3">
             <button
               type="button"
               onClick={() => navigate('/categories')}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg 
-                hover:bg-gray-50 transition-colors text-sm font-medium"
+              className="px-6 py-4 border border-white/10 text-white rounded-2xl hover:bg-white/5 transition-all text-sm font-black uppercase tracking-widest"
             >
-              Cancel
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="btn-premium flex items-center gap-2 px-8 shadow-lg shadow-primary-500/20"
+            >
+              {isSubmitting ? (
+                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+              ) : (
+                <Save size={18} />
+              )}
+              <span>{isEditing ? 'Actualizar' : 'Crear'}</span>
             </button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 }
 
-/**
- * Recursively render <option> elements for the parent selector.
- * Excludes the current category (to prevent self-reference) and its descendants.
- */
 function renderParentOptions(
   nodes: CategoryTreeNode[],
   selectedParentId: string,
@@ -292,12 +297,11 @@ function renderParentOptions(
   const options: React.ReactNode[] = [];
 
   for (const node of nodes) {
-    // Skip the current category and its children to prevent circular reference
     if (node.id === currentCategoryId) continue;
 
-    const indent = '\u00A0\u00A0'.repeat(depth);
+    const indent = '\u00A0\u00A0'.repeat(depth * 2);
     options.push(
-      <option key={node.id} value={node.id}>
+      <option key={node.id} value={node.id} className="bg-surface-custom-900">
         {indent}{node.name}
       </option>,
     );

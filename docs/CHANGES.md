@@ -158,6 +158,56 @@ El orden de implementación es **estricto**: un change debe estar archivado ante
 
 ---
 
+---
+
+## 20. `midnight-theme-unification`
+- **Funcionalidad**: Refactorización estética de todas las páginas administrativas y de perfil de usuario (Dashboard, Perfil, Direcciones, Pedidos) para asegurar coherencia visual total con el diseño Midnight Dark Mode.
+- **Historias**: US-077, US-078
+- **Dependencias**: `infrastructure-setup`, `auth-system`
+- **Por qué**: La experiencia del usuario debe ser fluida y sin saltos de contraste bruscos entre secciones.
+
+---
+
+## 21. `advanced-metrics-visualization`
+- **Funcionalidad**: Mejora del Dashboard de Admin con gráficos interactivos, comparativas temporales, exportación de reportes en PDF/Excel y mapas de calor de ventas.
+- **Historias**: US-079, US-080, US-081
+- **Dependencias**: `metrics-dashboard`
+- **Por qué**: Una visualización de datos pobre limita la capacidad de toma de decisiones del administrador.
+
+---
+
+## 22. `real-time-notifications`
+- **Funcionalidad**: Sistema de notificaciones en tiempo real (Toasts + Badge de notificaciones) para cambios de estado en pedidos y alertas de stock bajo para administradores.
+- **Historias**: US-082, US-083
+- **Dependencias**: `order-state-machine`
+- **Por qué**: Mejora drásticamente la reactividad del sistema y la satisfacción del cliente.
+
+---
+
+## 23. `product-reviews-ratings`
+- **Funcionalidad**: Sistema de calificaciones (estrellas) y comentarios para productos, con moderación administrativa opcional.
+- **Historias**: US-084, US-085, US-086
+- **Dependencias**: `product-catalog`, `order-visualization`
+- **Por qué**: El feedback de los clientes construye confianza y ayuda a otros usuarios en su decisión de compra.
+
+---
+
+## 24. `cart-server-persistence`
+- **Funcionalidad**: Persistencia del carrito en el backend para usuarios autenticados, permitiendo que el carrito se mantenga entre diferentes dispositivos.
+- **Historias**: US-087, US-088
+- **Dependencias**: `shopping-cart`, `auth-system`
+- **Por qué**: Evita la pérdida de ventas cuando los clientes cambian de dispositivo (ej. de móvil a desktop).
+
+---
+
+## 25. `discount-coupon-system`
+- **Funcionalidad**: Gestión de cupones de descuento (fijos o porcentuales) con reglas de validación (monto mínimo, fecha, un uso por cliente).
+- **Historias**: US-089, US-090, US-091
+- **Dependencias**: `pre-checkout-validation`, `order-creation`
+- **Por qué**: Es una de las herramientas de marketing más potentes para incentivar la compra inicial y la recurrencia.
+
+---
+
 ## 📋 Resumen de Sprints
 
 | Sprint | Changes | Épica(s) |
@@ -171,7 +221,10 @@ El orden de implementación es **estricto**: un change debe estar archivado ante
 | 6 | `mercadopago-integration` + `order-state-machine` | Epic 11 + 12 |
 | 7 | `order-visualization` + `payment-feedback` | Epic 13 + 14 |
 | 8 | `user-administration` + `admin-catalog` + `metrics-dashboard` + `system-configuration` | Epic 15 + 16 + 17 + 18 |
+| 9 | `midnight-theme-unification` + `advanced-metrics-visualization` | Epic 19 + 20 |
+| 10 | `real-time-notifications` + `product-reviews-ratings` | Epic 21 + 22 |
+| 11 | `cart-server-persistence` + `discount-coupon-system` | Epic 23 + 24 |
 
 ---
 
-**Total: 19 changes** cubriendo las 77 historias de usuario organizadas en 19 épicas.
+**Total: 25 changes** cubriendo las historias de usuario organizadas en 23 épicas.

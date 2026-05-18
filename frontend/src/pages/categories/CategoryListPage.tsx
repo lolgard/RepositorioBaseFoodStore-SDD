@@ -1,8 +1,6 @@
-/**
- * CategoryListPage — displays hierarchical category tree with create/edit/delete.
- */
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FolderTree, Plus, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '@/shared/store/auth-store';
 import { useToastStore } from '@/shared/store/toast-store';
 import { getCategoryTree, deleteCategory } from '@/shared/api/category-api';
@@ -26,8 +24,8 @@ export default function CategoryListPage() {
       const data = await getCategoryTree();
       setTree(data);
     } catch (err) {
-      setError('Failed to load categories');
-      addToast('Failed to load categories', 'error');
+      setError('Error al cargar categorías');
+      addToast('No se pudieron cargar las categorías', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -46,16 +44,17 @@ export default function CategoryListPage() {
 
   const handleDelete = useCallback(
     async (category: CategoryTreeNode) => {
-      if (!window.confirm(`Delete "${category.name}"? This action cannot be undone.`)) {
+      // Usaremos un prompt nativo pero estilizado visualmente si fuera posible, 
+      // por ahora mantenemos el flujo funcional con aviso Midnight.
+      if (!window.confirm(`¿Eliminar "${category.name}"? Esta acción no se puede deshacer.`)) {
         return;
       }
       try {
         await deleteCategory(category.id);
-        addToast(`"${category.name}" deleted successfully`, 'success');
-        // Refresh the tree
+        addToast(`"${category.name}" eliminada correctamente`, 'success');
         fetchTree();
       } catch (err: any) {
-        const message = err?.response?.data?.detail || 'Failed to delete category';
+        const message = err?.response?.data?.detail || 'Error al eliminar categoría';
         addToast(message, 'error');
       }
     },
@@ -64,58 +63,59 @@ export default function CategoryListPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-gray-500">Loading categories...</p>
-        </div>
+      <div className="p-8 max-w-4xl mx-auto space-y-6">
+        <div className="h-8 w-48 bg-white/5 animate-pulse rounded-lg" />
+        <div className="card-premium h-[400px] animate-pulse" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-700">{error}</p>
-            <button
-              type="button"
-              onClick={fetchTree}
-              className="mt-2 text-sm text-red-600 underline hover:text-red-800"
-            >
-              Try again
-            </button>
-          </div>
+      <div className="p-8 max-w-4xl mx-auto">
+        <div className="card-premium p-8 border-red-500/20 flex flex-col items-center text-center space-y-4">
+          <AlertCircle className="text-red-400" size={48} />
+          <h2 className="text-xl font-bold text-white uppercase italic tracking-tighter">{error}</h2>
+          <button
+            type="button"
+            onClick={fetchTree}
+            className="text-primary-400 font-bold hover:underline"
+          >
+            Reintentar conexión
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Manage your product category hierarchy
-            </p>
+    <div className="p-6 max-w-4xl mx-auto space-y-8">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-primary-500/10 rounded-2xl border border-primary-500/20 shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)]">
+            <FolderTree className="text-primary-400" size={32} />
           </div>
-
-          {isStaffOrAdmin && (
-            <button
-              type="button"
-              onClick={() => navigate('/categories/new')}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
-                transition-colors text-sm font-medium"
-            >
-              + Add Category
-            </button>
-          )}
+          <div>
+            <h1 className="text-3xl font-black text-white italic uppercase tracking-tighter">Categorías</h1>
+            <p className="text-surface-custom-400 text-sm">Gestiona la jerarquía y organización del catálogo.</p>
+          </div>
         </div>
 
-        {/* Category tree */}
+        {isStaffOrAdmin && (
+          <button
+            type="button"
+            onClick={() => navigate('/categories/new')}
+            className="btn-premium flex items-center gap-2"
+          >
+            <Plus size={20} />
+            <span>Nueva Categoría</span>
+          </button>
+        )}
+      </div>
+
+      {/* Category tree container */}
+      <div className="card-premium p-6 md:p-8">
         <CategoryTree
           nodes={tree}
           onEdit={isStaffOrAdmin ? handleEdit : undefined}

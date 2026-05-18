@@ -6,6 +6,7 @@ export interface AdminUserUpdate {
   email?: string;
   role?: string;
   is_active?: boolean;
+  image_url?: string | null;
 }
 
 export interface AdminUserResponse {
@@ -15,6 +16,7 @@ export interface AdminUserResponse {
   last_name: string;
   role: string;
   is_active: boolean;
+  image_url?: string | null;
   created_at: string;
   updated_at: string;
 }

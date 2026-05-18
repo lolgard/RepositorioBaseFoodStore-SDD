@@ -27,6 +27,7 @@ const OrderConfirmationPage = lazy(() => import('@/pages/orders/OrderConfirmatio
 const PaymentFeedbackPage = lazy(() => import('@/pages/orders/PaymentFeedbackPage'));
 const UserListPage = lazy(() => import('@/pages/users/UserListPage'));
 const UserFormPage = lazy(() => import('@/pages/users/UserFormPage'));
+const ProfilePage = lazy(() => import('@/pages/profile/ProfilePage'));
 
 // Loading fallback
 const LoadingFallback = () => <div className="flex items-center justify-center min-h-screen">Cargando...</div>;
@@ -124,11 +125,11 @@ export function AppRouter() {
           <Route
             path="/products"
             element={
-              <RoleProtectedRoute requiredRole="STAFF">
+              <ProtectedRoute>
                 <AppLayout>
                   <ProductListPage />
                 </AppLayout>
-              </RoleProtectedRoute>
+              </ProtectedRoute>
             }
           />
           <Route
@@ -154,11 +155,11 @@ export function AppRouter() {
           <Route
             path="/products/:id"
             element={
-              <RoleProtectedRoute requiredRole="STAFF">
+              <ProtectedRoute>
                 <AppLayout>
                   <ProductDetailPage />
                 </AppLayout>
-              </RoleProtectedRoute>
+              </ProtectedRoute>
             }
           />
 
@@ -247,6 +248,18 @@ export function AppRouter() {
               <ProtectedRoute>
                 <AppLayout>
                   <PaymentFeedbackPage />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Profile page */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <ProfilePage />
                 </AppLayout>
               </ProtectedRoute>
             }

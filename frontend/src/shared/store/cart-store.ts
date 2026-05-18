@@ -4,10 +4,13 @@ import type { CartItem } from '@/entities/cart/types';
 
 interface CartStore {
   items: CartItem[];
+  couponCode: string | null;
+  discountPercentage: number;
   addItem: (item: { product_id: number; name: string; price: string; excluded_ingredients?: number[]; notes?: string; quantity?: number }) => void;
   removeItem: (productId: number) => void;
   updateQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
+  setCoupon: (code: string | null, percentage: number) => void;
 }
 
 function itemKey(item: { product_id: number; excluded_ingredients?: number[] }): string {
@@ -18,6 +21,8 @@ export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
+      couponCode: null,
+      discountPercentage: 0,
 
       addItem: (newItem) => {
         const { items } = get();
@@ -64,7 +69,8 @@ export const useCartStore = create<CartStore>()(
         });
       },
 
-      clearCart: () => set({ items: [] }),
+      clearCart: () => set({ items: [], couponCode: null, discountPercentage: 0 }),
+      setCoupon: (code, percentage) => set({ couponCode: code, discountPercentage: percentage }),
     }),
     {
       name: 'food-store-cart',

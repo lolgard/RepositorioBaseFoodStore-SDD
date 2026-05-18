@@ -23,6 +23,16 @@ from app.schemas.delivery_address import (
     AddressUpdate,
     AddressResponse,
 )
+from app.schemas.cart import (
+    CartItemCreate,
+    CartItemResponse,
+    CartResponse,
+    CartSyncRequest,
+)
+from app.schemas.discount_coupon import (
+    DiscountCouponCreate,
+    DiscountCouponResponse,
+)
 
 __all__ = [
     "UserCreate",
@@ -41,4 +51,10 @@ __all__ = [
     "AddressCreate",
     "AddressUpdate",
     "AddressResponse",
+    "CartItemCreate",
+    "CartItemResponse",
+    "CartResponse",
+    "CartSyncRequest",
+    "DiscountCouponCreate",
+    "DiscountCouponResponse",
 ]

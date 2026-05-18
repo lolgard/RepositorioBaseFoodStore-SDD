@@ -39,9 +39,6 @@ export default function HomePage() {
                 <span>Explorar Catálogo</span>
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="px-8 py-4 rounded-2xl font-bold text-surface-custom-300 border-2 border-white/10 hover:bg-white/5 transition-all">
-                Nuestra Historia
-              </button>
             </div>
 
             <div className="flex items-center space-x-8 pt-4">

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Search, Plus, Edit2, Trash2, AlertTriangle, ChevronLeft, ChevronRight, ChefHat } from 'lucide-react';
 import { listIngredients, deleteIngredient } from '@/shared/api/ingredient-api';
 import { useToastStore } from '@/shared/store/toast-store';
 import type { Ingredient } from '@/entities/ingredient/types';
@@ -15,7 +16,7 @@ export default function IngredientListPage() {
   const [filterAlergeno, setFilterAlergeno] = useState<boolean | null>(null);
   const [page, setPage] = useState(0);
   const [deleteId, setDeleteId] = useState<number | null>(null);
-  const limit = 20;
+  const limit = 12;
 
   const fetchIngredients = useCallback(async () => {
     setLoading(true);
@@ -28,7 +29,7 @@ export default function IngredientListPage() {
       setIngredients(data.items);
       setTotal(data.total);
     } catch {
-      addToast('Failed to load ingredients', 'error');
+      addToast('Error al cargar ingredientes', 'error');
     } finally {
       setLoading(false);
     }
@@ -42,145 +43,181 @@ export default function IngredientListPage() {
     if (deleteId === null) return;
     try {
       await deleteIngredient(deleteId);
-      addToast('Ingredient deleted successfully', 'success');
+      addToast('Ingrediente eliminado', 'success');
       setDeleteId(null);
       fetchIngredients();
     } catch {
-      addToast('Failed to delete ingredient', 'error');
+      addToast('Error al eliminar ingrediente', 'error');
     }
   };
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Ingredients</h1>
+    <div className="p-6 max-w-6xl mx-auto space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+            <ChefHat className="text-primary-400" size={32} />
+            Ingredientes
+          </h1>
+          <p className="text-surface-custom-400 mt-1">Gestión de insumos y control de alérgenos.</p>
+        </div>
         <button
           onClick={() => navigate('/ingredients/new')}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="btn-premium flex items-center gap-2"
         >
-          + New Ingredient
+          <Plus size={20} />
+          <span>Nuevo Ingrediente</span>
         </button>
       </div>
 
       {/* Filters */}
-      <div className="flex gap-4 mb-4">
-        <input
-          type="text"
-          placeholder="Search by name..."
-          value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-          className="border rounded px-3 py-2 flex-1 max-w-xs"
-        />
+      <div className="card-premium p-4 flex flex-wrap gap-4 items-center">
+        <div className="relative flex-1 min-w-[280px]">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-surface-custom-500" size={18} />
+          <input
+            type="text"
+            placeholder="Buscar por nombre..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+            className="input-premium pl-12"
+          />
+        </div>
         <select
           value={filterAlergeno === null ? '' : filterAlergeno.toString()}
           onChange={(e) => {
             setFilterAlergeno(e.target.value === '' ? null : e.target.value === 'true');
             setPage(0);
           }}
-          className="border rounded px-3 py-2"
+          className="input-premium w-full md:w-64"
         >
-          <option value="">All ingredients</option>
-          <option value="true">Allergens only</option>
-          <option value="false">Non-allergens only</option>
+          <option value="">Todos los ingredientes</option>
+          <option value="true">Solo Alérgenos</option>
+          <option value="false">Sin Alérgenos</option>
         </select>
       </div>
 
-      {/* Table */}
-      {loading ? (
-        <div className="text-center py-8 text-gray-500">Loading...</div>
-      ) : ingredients.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          No ingredients found. Create your first ingredient!
-        </div>
-      ) : (
-        <>
-          <table className="w-full border-collapse">
+      {/* List / Table */}
+      <div className="card-premium overflow-hidden border border-white/5">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-100">
-                <th className="text-left p-3 border-b">Name</th>
-                <th className="text-left p-3 border-b">Description</th>
-                <th className="text-left p-3 border-b">Allergen</th>
-                <th className="text-right p-3 border-b">Actions</th>
+              <tr className="bg-white/5 border-b border-white/10">
+                <th className="p-4 text-[10px] font-black uppercase tracking-[0.2em] text-surface-custom-500">Nombre</th>
+                <th className="p-4 text-[10px] font-black uppercase tracking-[0.2em] text-surface-custom-500 hidden sm:table-cell">Descripción</th>
+                <th className="p-4 text-[10px] font-black uppercase tracking-[0.2em] text-surface-custom-500 text-center">Estado</th>
+                <th className="p-4 text-[10px] font-black uppercase tracking-[0.2em] text-surface-custom-500 text-right">Acciones</th>
               </tr>
             </thead>
-            <tbody>
-              {ingredients.map((ing) => (
-                <tr key={ing.id} className="hover:bg-gray-50 border-b">
-                  <td className="p-3 font-medium">{ing.name}</td>
-                  <td className="p-3 text-gray-600">{ing.description || '—'}</td>
-                  <td className="p-3">
-                    {ing.es_alergeno ? (
-                      <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-medium">
-                        ⚠ Allergen
-                      </span>
-                    ) : (
-                      <span className="text-gray-400">—</span>
-                    )}
-                  </td>
-                  <td className="p-3 text-right">
-                    <button
-                      onClick={() => navigate(`/ingredients/${ing.id}/edit`)}
-                      className="text-blue-600 hover:text-blue-800 mr-3"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => setDeleteId(ing.id)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      Delete
-                    </button>
+            <tbody className="divide-y divide-white/5">
+              {loading ? (
+                <tr>
+                  <td colSpan={4} className="p-12 text-center">
+                    <div className="w-8 h-8 border-4 border-primary-500/20 border-t-primary-500 rounded-full animate-spin mx-auto" />
                   </td>
                 </tr>
-              ))}
+              ) : ingredients.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="p-12 text-center text-surface-custom-500 italic">
+                    No se encontraron ingredientes con los filtros actuales.
+                  </td>
+                </tr>
+              ) : (
+                ingredients.map((ing) => (
+                  <tr key={ing.id} className="group hover:bg-white/5 transition-colors">
+                    <td className="p-4">
+                      <span className="font-bold text-white group-hover:text-primary-400 transition-colors">{ing.name}</span>
+                    </td>
+                    <td className="p-4 hidden sm:table-cell">
+                      <span className="text-sm text-surface-custom-400 line-clamp-1">{ing.description || '—'}</span>
+                    </td>
+                    <td className="p-4 text-center">
+                      {ing.es_alergeno ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/10 text-red-400 text-[10px] font-black uppercase tracking-widest border border-red-500/20">
+                          <AlertTriangle size={12} />
+                          Alérgeno
+                        </span>
+                      ) : (
+                        <span className="text-surface-custom-700 text-xs">—</span>
+                      )}
+                    </td>
+                    <td className="p-4 text-right">
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => navigate(`/ingredients/${ing.id}/edit`)}
+                          className="p-2 text-surface-custom-500 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                        >
+                          <Edit2 size={18} />
+                        </button>
+                        <button
+                          onClick={() => setDeleteId(ing.id)}
+                          className="p-2 text-surface-custom-500 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
+        </div>
+      </div>
 
-          {/* Pagination */}
-          <div className="flex items-center justify-between mt-4">
-            <span className="text-sm text-gray-600">
-              Showing {Math.min((page * limit) + 1, total)}–{Math.min((page + 1) * limit, total)} of {total}
-            </span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPage(p => Math.max(0, p - 1))}
-                disabled={page === 0}
-                className="px-3 py-1 border rounded disabled:opacity-50"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => setPage(p => p + 1)}
-                disabled={(page + 1) * limit >= total}
-                className="px-3 py-1 border rounded disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
+      {/* Pagination */}
+      {!loading && total > 0 && (
+        <div className="flex items-center justify-between pt-4 border-t border-white/5">
+          <p className="text-sm text-surface-custom-500 font-medium">
+            Mostrando <span className="text-white font-bold">{Math.min((page * limit) + 1, total)}</span> a <span className="text-white font-bold">{Math.min((page + 1) * limit, total)}</span> de <span className="text-white font-bold">{total}</span>
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(0, p - 1))}
+              disabled={page === 0}
+              className="p-2 border border-white/10 text-surface-custom-400 rounded-xl hover:bg-white/5 disabled:opacity-20 transition-all"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              onClick={() => setPage(p => p + 1)}
+              disabled={(page + 1) * limit >= total}
+              className="p-2 border border-white/10 text-surface-custom-400 rounded-xl hover:bg-white/5 disabled:opacity-20 transition-all"
+            >
+              <ChevronRight size={20} />
+            </button>
           </div>
-        </>
+        </div>
       )}
 
       {/* Delete confirmation modal */}
       {deleteId !== null && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-            <h3 className="text-lg font-semibold mb-2">Confirm Delete</h3>
-            <p className="text-gray-600 mb-4">
-              Are you sure you want to delete this ingredient? This action cannot be undone.
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-surface-custom-950/80 backdrop-blur-md"
+            onClick={() => setDeleteId(null)}
+          />
+          <div className="card-premium p-8 max-w-md w-full relative z-10 border-red-500/20">
+            <div className="flex items-center gap-4 text-red-400 mb-6">
+              <div className="p-3 bg-red-500/10 rounded-2xl border border-red-500/20">
+                <AlertTriangle size={32} />
+              </div>
+              <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">¿Confirmar Baja?</h3>
+            </div>
+            <p className="text-surface-custom-400 leading-relaxed italic mb-8">
+              ¿Estás seguro de que querés eliminar este ingrediente? Esta acción no se puede deshacer y podría afectar a los productos asociados.
             </p>
-            <div className="flex justify-end gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => setDeleteId(null)}
-                className="px-4 py-2 border rounded hover:bg-gray-50"
+                className="flex-1 py-4 border border-white/10 text-white rounded-2xl hover:bg-white/5 transition-all text-sm font-black uppercase tracking-widest"
               >
-                Cancel
+                Cancelar
               </button>
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                className="flex-1 py-4 bg-red-500 text-white rounded-2xl hover:bg-red-600 transition-all text-sm font-black uppercase tracking-widest"
               >
-                Delete
+                Eliminar
               </button>
             </div>
           </div>
