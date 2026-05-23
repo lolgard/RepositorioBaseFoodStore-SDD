@@ -1,6 +1,6 @@
 # Mapa Completo de Changes — Food Store
 
-Este documento define los **19 changes** necesarios para desarrollar Food Store de principio a fin, siguiendo el flujo OPSX (Spec-Driven Development).
+Este documento define los **27 changes** necesarios para desarrollar Food Store de principio a fin, siguiendo el flujo OPSX (Spec-Driven Development).
 
 El orden de implementación es **estricto**: un change debe estar archivado antes de proponer uno que dependa de él.
 
@@ -208,6 +208,22 @@ El orden de implementación es **estricto**: un change debe estar archivado ante
 
 ---
 
+## 26. `guest-shopping-flow`
+- **Funcionalidad**: El catálogo de productos es la página de inicio pública de la aplicación (ruta `/`), accesible sin autenticación. Los usuarios invitados pueden explorar el catálogo con todos sus filtros y ver el detalle de cada producto. El carrito es completamente funcional para invitados (Zustand + localStorage): pueden agregar, modificar cantidades, personalizar y eliminar items sin ningún tipo de login. Al intentar iniciar el checkout, se activa un **auth gate**: el usuario es redirigido a login/registro con el contenido del carrito preservado. Al autenticarse, el carrito del invitado se fusiona con el estado del usuario (cart merge antes de entrar al flujo de compra).
+- **Historias**: US-092, US-093, US-094, US-095
+- **Dependencias**: `shopping-cart`, `navigation-layout`
+- **Por qué**: Reducir la fricción en el top of funnel es crítico para la conversión. Forzar el registro antes de explorar el catálogo o armar un carrito es una de las principales causas de abandono en e-commerce. La autenticación solo se requiere en el momento exacto en que es estrictamente necesaria: al confirmar la compra.
+
+---
+
+## 27. `admin-role-navigation`
+- **Funcionalidad**: Al iniciar sesión como Admin, la ruta de aterrizaje por defecto es `/admin/dashboard`. El menú de navegación del rol Admin no incluye las secciones de Carrito, Mis Pedidos ni Direcciones de Entrega, ya que son funcionalidades exclusivas del flujo de compra del cliente. El Admin mantiene acceso completo al catálogo (productos, categorías, ingredientes) en modo edición. Las rutas del flujo de compra (`/cart`, `/checkout`, `/addresses`) quedan protegidas por rol: un intento de navegación directa por parte de un Admin retorna un redirect a `/admin/dashboard`.
+- **Historias**: US-096, US-097
+- **Dependencias**: `navigation-layout`, `metrics-dashboard`
+- **Por qué**: El Admin opera en un contexto completamente distinto al del cliente. Mezclar ambas navegaciones genera confusión de UX y expone rutas irrelevantes para su rol. El dashboard es la vista operativa central del administrador y debe ser su punto de entrada natural al sistema.
+
+---
+
 ## 📋 Resumen de Sprints
 
 | Sprint | Changes | Épica(s) |
@@ -216,15 +232,15 @@ El orden de implementación es **estricto**: un change debe estar archivado ante
 | 1 | `auth-system` + `navigation-layout` | Epic 01 + 02 |
 | 2 | `category-management` + `ingredient-management` | Epic 03 + 04 |
 | 3 | `product-catalog` + `client-profile` | Epic 05 + 06 |
-| 4 | `delivery-addresses` + `shopping-cart` | Epic 07 + 08 |
+| 4 | `delivery-addresses` + `shopping-cart` + `guest-shopping-flow` | Epic 07 + 08 + 25 |
 | 5 | `pre-checkout-validation` + `order-creation` | Epic 09 + 10 |
 | 6 | `mercadopago-integration` + `order-state-machine` | Epic 11 + 12 |
 | 7 | `order-visualization` + `payment-feedback` | Epic 13 + 14 |
-| 8 | `user-administration` + `admin-catalog` + `metrics-dashboard` + `system-configuration` | Epic 15 + 16 + 17 + 18 |
+| 8 | `user-administration` + `admin-catalog` + `metrics-dashboard` + `system-configuration` + `admin-role-navigation` | Epic 15 + 16 + 17 + 18 + 26 |
 | 9 | `midnight-theme-unification` + `advanced-metrics-visualization` | Epic 19 + 20 |
 | 10 | `real-time-notifications` + `product-reviews-ratings` | Epic 21 + 22 |
 | 11 | `cart-server-persistence` + `discount-coupon-system` | Epic 23 + 24 |
 
 ---
 
-**Total: 25 changes** cubriendo las historias de usuario organizadas en 23 épicas.
+**Total: 27 changes** cubriendo las historias de usuario organizadas en 25 épicas.

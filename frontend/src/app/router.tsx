@@ -1,7 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { ProtectedRoute, RoleProtectedRoute } from './ProtectedRoute';
 import { AppLayout } from '@/widgets/layout/AppLayout';
+import { useAuthStore } from '@/shared/store/auth-store';
 
 // Pages (lazy loaded)
 const LoginPage = lazy(() => import('@/pages/login/LoginPage'));
@@ -29,6 +30,15 @@ const UserListPage = lazy(() => import('@/pages/users/UserListPage'));
 const UserFormPage = lazy(() => import('@/pages/users/UserFormPage'));
 const ProfilePage = lazy(() => import('@/pages/profile/ProfilePage'));
 
+// Redirect: ADMIN → dashboard, others → catalog
+function RootRedirect() {
+  const user = useAuthStore((s) => s.user);
+  if (user?.role === 'ADMIN') {
+    return <Navigate to="/admin/metrics" replace />;
+  }
+  return <ProductListPage />;
+}
+
 // Loading fallback
 const LoadingFallback = () => <div className="flex items-center justify-center min-h-screen">Cargando...</div>;
 
@@ -45,15 +55,21 @@ export function AppRouter() {
           <Route path="/403" element={<ForbiddenPage />} />
           <Route path="/404" element={<NotFoundPage />} />
 
-          {/* Protected routes with AppLayout */}
+          {/* Public routes with AppLayout (no auth required) */}
           <Route
             path="/"
             element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <HomePage />
-                </AppLayout>
-              </ProtectedRoute>
+              <AppLayout>
+                <RootRedirect />
+              </AppLayout>
+            }
+          />
+          <Route
+            path="/home"
+            element={
+              <AppLayout>
+                <HomePage />
+              </AppLayout>
             }
           />
 
@@ -121,15 +137,13 @@ export function AppRouter() {
             }
           />
 
-          {/* Product routes (STAFF/ADMIN) */}
+          {/* Product routes (public - no auth required) */}
           <Route
             path="/products"
             element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <ProductListPage />
-                </AppLayout>
-              </ProtectedRoute>
+              <AppLayout>
+                <ProductListPage />
+              </AppLayout>
             }
           />
           <Route
@@ -155,101 +169,97 @@ export function AppRouter() {
           <Route
             path="/products/:id"
             element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <ProductDetailPage />
-                </AppLayout>
-              </ProtectedRoute>
+              <AppLayout>
+                <ProductDetailPage />
+              </AppLayout>
             }
           />
 
-          {/* Address routes (authenticated users) */}
+          {/* Address routes (CLIENTE only) */}
           <Route
             path="/addresses"
             element={
-              <ProtectedRoute>
+              <RoleProtectedRoute allowedRoles={['CLIENTE']}>
                 <AppLayout>
                   <AddressListPage />
                 </AppLayout>
-              </ProtectedRoute>
+              </RoleProtectedRoute>
             }
           />
           <Route
             path="/addresses/new"
             element={
-              <ProtectedRoute>
+              <RoleProtectedRoute allowedRoles={['CLIENTE']}>
                 <AppLayout>
                   <AddressFormPage />
                 </AppLayout>
-              </ProtectedRoute>
+              </RoleProtectedRoute>
             }
           />
           <Route
             path="/addresses/:id/edit"
             element={
-              <ProtectedRoute>
+              <RoleProtectedRoute allowedRoles={['CLIENTE']}>
                 <AppLayout>
                   <AddressFormPage />
                 </AppLayout>
-              </ProtectedRoute>
+              </RoleProtectedRoute>
             }
           />
 
-          {/* Cart */}
+          {/* Cart (public - guests can browse, CartPage handles admin/guest cases) */}
           <Route
             path="/cart"
             element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <CartPage />
-                </AppLayout>
-              </ProtectedRoute>
+              <AppLayout>
+                <CartPage />
+              </AppLayout>
             }
           />
 
-          {/* Order routes (authenticated users) */}
+          {/* Order routes (CLIENTE / GESTOR only — ADMIN excluded) */}
           <Route
             path="/orders"
             element={
-              <ProtectedRoute>
+              <RoleProtectedRoute allowedRoles={['CLIENTE', 'GESTOR']}>
                 <AppLayout>
                   <OrderListPage />
                 </AppLayout>
-              </ProtectedRoute>
+              </RoleProtectedRoute>
             }
           />
           <Route
             path="/orders/:id"
             element={
-              <ProtectedRoute>
+              <RoleProtectedRoute allowedRoles={['CLIENTE', 'GESTOR']}>
                 <AppLayout>
                   <OrderDetailPage />
                 </AppLayout>
-              </ProtectedRoute>
+              </RoleProtectedRoute>
             }
           />
 
-          {/* Order confirmation */}
+          {/* Order confirmation (CLIENTE / GESTOR only) */}
           <Route
             path="/orders/:id/confirmed"
             element={
-              <ProtectedRoute>
+              <RoleProtectedRoute allowedRoles={['CLIENTE', 'GESTOR']}>
                 <AppLayout>
                   <OrderConfirmationPage />
                 </AppLayout>
-              </ProtectedRoute>
+              </RoleProtectedRoute>
             }
           />
 
-          {/* Payment feedback */}
+          {/* Payment feedback (CLIENTE / GESTOR only) */}
           <Route
             path="/payment/feedback"
             element={
-              <ProtectedRoute>
+              <RoleProtectedRoute allowedRoles={['CLIENTE', 'GESTOR']}>
                 <AppLayout>
                   <PaymentFeedbackPage />
                 </AppLayout>
-              </ProtectedRoute>
+              </RoleProtectedRoute>
             }
           />
 

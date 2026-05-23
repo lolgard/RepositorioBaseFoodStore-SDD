@@ -24,6 +24,14 @@
       "sessions": 1,
       "memories": 3,
       "prompts": 0
+    },
+    {
+      "id": "a7e78471",
+      "created_by": "enzoc",
+      "created_at": "2026-05-20T14:00:31Z",
+      "sessions": 1,
+      "memories": 0,
+      "prompts": 1
     }
   ]
 }

@@ -19,15 +19,21 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
 interface RoleProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole: UserRole;
+  requiredRole?: UserRole;
+  /** Exact role match (no hierarchy). User role must be in this list. */
+  allowedRoles?: UserRole[];
 }
 
 /**
- * Role-protected route that checks if the authenticated user has the minimum required role.
- * ADMIN bypasses all role checks.
- * Redirects to /403 if the user lacks the required role.
+ * Role-protected route that checks access.
+ *
+ * If `allowedRoles` is provided: exact role match — user's role must be in the list.
+ * If `requiredRole` is provided: hierarchy check — user's level must meet or exceed the required level.
+ * If neither: defaults to any authenticated user.
+ *
+ * Redirects to /login if unauthenticated, /403 if access denied.
  */
-export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRouteProps) {
+export function RoleProtectedRoute({ children, requiredRole, allowedRoles }: RoleProtectedRouteProps) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const user = useAuthStore((state) => state.user);
 
@@ -35,8 +41,16 @@ export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRout
     return <Navigate to="/login" replace />;
   }
 
-  if (!hasMinRole(user?.role, requiredRole)) {
-    return <Navigate to="/403" replace />;
+  if (allowedRoles) {
+    // Exact role match
+    if (!user?.role || !allowedRoles.includes(user.role)) {
+      return <Navigate to="/403" replace />;
+    }
+  } else if (requiredRole) {
+    // Hierarchy check
+    if (!hasMinRole(user?.role, requiredRole)) {
+      return <Navigate to="/403" replace />;
+    }
   }
 
   return <>{children}</>;

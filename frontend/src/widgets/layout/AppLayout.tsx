@@ -227,87 +227,118 @@ export function AppLayout({ children }: AppLayoutProps) {
       <div className="px-2 relative">
         <div className="h-px bg-white/5 my-4 mx-2" />
         
-        <div 
-          onClick={() => setShowProfileMenu(!showProfileMenu)}
-          className={`flex items-center rounded-xl p-2.5 cursor-pointer hover:bg-white/5 transition-all text-left relative ${
-            isExpanded ? 'space-x-3 justify-between' : 'justify-center'
-          }`}
-        >
-          <div className="flex items-center space-x-3 min-w-0">
-            {user?.image_url ? (
-              <img
-                src={user.image_url}
-                alt="Foto de perfil"
-                className="w-10 h-10 rounded-xl object-cover border border-white/10 shrink-0 shadow-md"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/initials/svg?seed=${user?.first_name}`;
-                }}
-              />
-            ) : (
-              <div className="w-10 h-10 gradient-primary rounded-xl shadow-md flex items-center justify-center text-white font-bold text-base shrink-0 select-none">
-                {user?.first_name?.[0]}
+        {user ? (
+          <>
+            <div 
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className={`flex items-center rounded-xl p-2.5 cursor-pointer hover:bg-white/5 transition-all text-left relative ${
+                isExpanded ? 'space-x-3 justify-between' : 'justify-center'
+              }`}
+            >
+              <div className="flex items-center space-x-3 min-w-0">
+                {user?.image_url ? (
+                  <img
+                    src={user.image_url}
+                    alt="Foto de perfil"
+                    className="w-10 h-10 rounded-xl object-cover border border-white/10 shrink-0 shadow-md"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/initials/svg?seed=${user?.first_name}`;
+                    }}
+                  />
+                ) : (
+                  <div className="w-10 h-10 gradient-primary rounded-xl shadow-md flex items-center justify-center text-white font-bold text-base shrink-0 select-none">
+                    {user?.first_name?.[0]}
+                  </div>
+                )}
+                
+                {isExpanded && (
+                  <div className="min-w-0 flex-grow select-none">
+                    <p className="text-sm font-bold text-white truncate leading-tight">{user?.first_name}</p>
+                    <p className="text-[9px] text-primary-400 font-bold uppercase tracking-widest leading-none mt-1">
+                      {user?.role === 'CLIENTE' ? 'Cliente' : user?.role}
+                    </p>
+                  </div>
+                )}
               </div>
-            )}
-            
-            {isExpanded && (
-              <div className="min-w-0 flex-grow select-none">
-                <p className="text-sm font-bold text-white truncate leading-tight">{user?.first_name}</p>
-                <p className="text-[9px] text-primary-400 font-bold uppercase tracking-widest leading-none mt-1">
-                  {user?.role === 'CLIENTE' ? 'Cliente' : user?.role}
-                </p>
-              </div>
-            )}
-          </div>
-          
-          {isExpanded && (
-            <MoreVertical size={16} className="text-surface-custom-500 shrink-0" />
-          )}
-        </div>
+              
+              {isExpanded && (
+                <MoreVertical size={16} className="text-surface-custom-500 shrink-0" />
+              )}
+            </div>
 
-        {/* Profile Menu Drop-up */}
-        <AnimatePresence>
-          {showProfileMenu && (
-            <>
-              <div 
-                className="fixed inset-0 z-40 bg-transparent" 
-                onClick={() => setShowProfileMenu(false)}
-              />
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                transition={{ duration: 0.15 }}
-                className={`absolute z-50 bg-surface-custom-900 border border-white/10 rounded-2xl p-2 shadow-2xl flex flex-col space-y-1 w-48 ${
-                  isExpanded ? 'left-2 bottom-16' : 'left-14 bottom-16'
-                }`}
-              >
-                <button
-                  onClick={() => {
-                    setShowProfileMenu(false);
-                    navigate('/profile');
-                  }}
-                  className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-bold text-surface-custom-300 hover:bg-white/5 hover:text-white transition-all text-left"
-                >
-                  <UserIcon size={16} />
-                  <span>Ver Mi Perfil</span>
-                </button>
-                
-                <div className="h-px bg-white/5 my-1" />
-                
-                <button
-                  onClick={() => {
-                    setShowProfileMenu(false);
-                    handleLogout();
-                  }}
-                  className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-bold text-red-400 hover:bg-red-500/10 transition-all text-left"
-                >
-                  <LogOut size={16} />
-                  <span>Cerrar Sesión</span>
-                </button>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+            {/* Profile Menu Drop-up */}
+            <AnimatePresence>
+              {showProfileMenu && (
+                <>
+                  <div 
+                    className="fixed inset-0 z-40 bg-transparent" 
+                    onClick={() => setShowProfileMenu(false)}
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className={`absolute z-50 bg-surface-custom-900 border border-white/10 rounded-2xl p-2 shadow-2xl flex flex-col space-y-1 w-48 ${
+                      isExpanded ? 'left-2 bottom-16' : 'left-14 bottom-16'
+                    }`}
+                  >
+                    <button
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        navigate('/profile');
+                      }}
+                      className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-bold text-surface-custom-300 hover:bg-white/5 hover:text-white transition-all text-left"
+                    >
+                      <UserIcon size={16} />
+                      <span>Ver Mi Perfil</span>
+                    </button>
+                    
+                    <div className="h-px bg-white/5 my-1" />
+                    
+                    <button
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        handleLogout();
+                      }}
+                      className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-bold text-red-400 hover:bg-red-500/10 transition-all text-left"
+                    >
+                      <LogOut size={16} />
+                      <span>Cerrar Sesión</span>
+                    </button>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </>
+        ) : (
+          /* Guest bottom section — Login / Register */
+          <div className="space-y-2 px-2">
+            {isExpanded && (
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-surface-custom-500 text-center mb-3">
+                Acceso
+              </p>
+            )}
+            <Link
+              to="/login"
+              className={`flex items-center rounded-xl font-bold transition-all gradient-primary text-white shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 ${
+                isExpanded ? 'px-4 py-3 space-x-3 mx-0 justify-center' : 'p-3.5 justify-center mx-0'
+              }`}
+            >
+              <LogOut size={18} className="rotate-180" />
+              {isExpanded && <span className="text-sm font-bold tracking-tight">Iniciar Sesión</span>}
+            </Link>
+            <Link
+              to="/register"
+              className={`flex items-center rounded-xl font-bold transition-all border border-white/10 text-surface-custom-300 hover:bg-white/5 hover:text-white ${
+                isExpanded ? 'px-4 py-3 space-x-3 mx-0 justify-center' : 'p-3.5 justify-center mx-0'
+              }`}
+            >
+              <UserIcon size={18} />
+              {isExpanded && <span className="text-sm font-bold tracking-tight">Registrarse</span>}
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -348,7 +379,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
 
           <div className="flex items-center space-x-2">
-            {user?.role === 'CLIENTE' && (
+            {(!user || user?.role === 'CLIENTE') && (
               <Link
                 to="/cart"
                 className="relative p-2 rounded-xl text-surface-custom-400 hover:bg-primary-400/10 hover:text-primary-400 transition-all"
@@ -369,25 +400,34 @@ export function AppLayout({ children }: AppLayoutProps) {
               </Link>
             )}
 
-            <Link
-              to="/profile"
-              className="w-8 h-8 rounded-lg overflow-hidden border border-white/10 shrink-0 shadow-sm"
-            >
-              {user?.image_url ? (
-                <img
-                  src={user.image_url}
-                  alt="Perfil"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/initials/svg?seed=${user?.first_name}`;
-                  }}
-                />
-              ) : (
-                <div className="w-full h-full gradient-primary flex items-center justify-center text-white font-bold text-xs">
-                  {user?.first_name?.[0]}
-                </div>
-              )}
-            </Link>
+            {user ? (
+              <Link
+                to="/profile"
+                className="w-8 h-8 rounded-lg overflow-hidden border border-white/10 shrink-0 shadow-sm"
+              >
+                {user?.image_url ? (
+                  <img
+                    src={user.image_url}
+                    alt="Perfil"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/initials/svg?seed=${user?.first_name}`;
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full gradient-primary flex items-center justify-center text-white font-bold text-xs">
+                    {user?.first_name?.[0]}
+                  </div>
+                )}
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="px-3 py-1.5 gradient-primary text-white rounded-xl font-bold text-xs shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all"
+              >
+                Ingresar
+              </Link>
+            )}
           </div>
         </header>
       )}
@@ -454,79 +494,103 @@ export function AppLayout({ children }: AppLayoutProps) {
                     <div className="px-2 relative">
                       <div className="h-px bg-white/5 my-4 mx-2" />
                       
-                      <div 
-                        onClick={() => setShowProfileMenu(!showProfileMenu)}
-                        className="flex items-center rounded-xl p-2.5 cursor-pointer hover:bg-white/5 transition-all text-left relative space-x-3 justify-between"
-                      >
-                        <div className="flex items-center space-x-3 min-w-0">
-                          {user?.image_url ? (
-                            <img
-                              src={user.image_url}
-                              alt="Foto de perfil"
-                              className="w-10 h-10 rounded-xl object-cover border border-white/10 shrink-0 shadow-md"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/initials/svg?seed=${user?.first_name}`;
-                              }}
-                            />
-                          ) : (
-                            <div className="w-10 h-10 gradient-primary rounded-xl shadow-md flex items-center justify-center text-white font-bold text-base shrink-0 select-none">
-                              {user?.first_name?.[0]}
+                      {user ? (
+                        <>
+                          <div 
+                            onClick={() => setShowProfileMenu(!showProfileMenu)}
+                            className="flex items-center rounded-xl p-2.5 cursor-pointer hover:bg-white/5 transition-all text-left relative space-x-3 justify-between"
+                          >
+                            <div className="flex items-center space-x-3 min-w-0">
+                              {user?.image_url ? (
+                                <img
+                                  src={user.image_url}
+                                  alt="Foto de perfil"
+                                  className="w-10 h-10 rounded-xl object-cover border border-white/10 shrink-0 shadow-md"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/initials/svg?seed=${user?.first_name}`;
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-10 h-10 gradient-primary rounded-xl shadow-md flex items-center justify-center text-white font-bold text-base shrink-0 select-none">
+                                  {user?.first_name?.[0]}
+                                </div>
+                              )}
+                              
+                              <div className="min-w-0 flex-grow select-none">
+                                <p className="text-sm font-bold text-white truncate leading-tight">{user?.first_name}</p>
+                                <p className="text-[9px] text-primary-400 font-bold uppercase tracking-widest leading-none mt-1">
+                                  {user?.role === 'CLIENTE' ? 'Cliente' : user?.role}
+                                </p>
+                              </div>
                             </div>
-                          )}
-                          
-                          <div className="min-w-0 flex-grow select-none">
-                            <p className="text-sm font-bold text-white truncate leading-tight">{user?.first_name}</p>
-                            <p className="text-[9px] text-primary-400 font-bold uppercase tracking-widest leading-none mt-1">
-                              {user?.role === 'CLIENTE' ? 'Cliente' : user?.role}
-                            </p>
+                            
+                            <MoreVertical size={16} className="text-surface-custom-500 shrink-0" />
                           </div>
-                        </div>
-                        
-                        <MoreVertical size={16} className="text-surface-custom-500 shrink-0" />
-                      </div>
 
-                      {/* Drop-up profile items */}
-                      <AnimatePresence>
-                        {showProfileMenu && (
-                          <>
-                            <div 
-                              className="fixed inset-0 z-40 bg-transparent" 
-                              onClick={() => setShowProfileMenu(false)}
-                            />
-                            <motion.div
-                              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                              animate={{ opacity: 1, y: 0, scale: 1 }}
-                              exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                              transition={{ duration: 0.15 }}
-                              className="absolute left-2 bottom-16 z-50 bg-surface-custom-900 border border-white/10 rounded-2xl p-2 shadow-2xl flex flex-col space-y-1 w-48"
-                            >
-                              <button
-                                onClick={() => {
-                                  setShowProfileMenu(false);
-                                  navigate('/profile');
-                                }}
-                                className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-bold text-surface-custom-300 hover:bg-white/5 hover:text-white transition-all text-left"
-                              >
-                                <UserIcon size={16} />
-                                <span>Ver Mi Perfil</span>
-                              </button>
-                              
-                              <div className="h-px bg-white/5 my-1" />
-                              
-                              <button
-                                onClick={() => {
-                                  setShowProfileMenu(false);
-                                  handleLogout();
-                                }}
-                                className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-bold text-red-400 hover:bg-red-500/10 transition-all text-left"
-                              >
-                                <LogOut size={16} />
-                                <span>Cerrar Sesión</span>
-                              </button>
-                            </motion.div>
-                          </>
-                        )}
-                      </AnimatePresence>
+                          {/* Drop-up profile items */}
+                          <AnimatePresence>
+                            {showProfileMenu && (
+                              <>
+                                <div 
+                                  className="fixed inset-0 z-40 bg-transparent" 
+                                  onClick={() => setShowProfileMenu(false)}
+                                />
+                                <motion.div
+                                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                  transition={{ duration: 0.15 }}
+                                  className="absolute left-2 bottom-16 z-50 bg-surface-custom-900 border border-white/10 rounded-2xl p-2 shadow-2xl flex flex-col space-y-1 w-48"
+                                >
+                                  <button
+                                    onClick={() => {
+                                      setShowProfileMenu(false);
+                                      navigate('/profile');
+                                    }}
+                                    className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-bold text-surface-custom-300 hover:bg-white/5 hover:text-white transition-all text-left"
+                                  >
+                                    <UserIcon size={16} />
+                                    <span>Ver Mi Perfil</span>
+                                  </button>
+                                  
+                                  <div className="h-px bg-white/5 my-1" />
+                                  
+                                  <button
+                                    onClick={() => {
+                                      setShowProfileMenu(false);
+                                      handleLogout();
+                                    }}
+                                    className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-bold text-red-400 hover:bg-red-500/10 transition-all text-left"
+                                  >
+                                    <LogOut size={16} />
+                                    <span>Cerrar Sesión</span>
+                                  </button>
+                                </motion.div>
+                              </>
+                            )}
+                          </AnimatePresence>
+                        </>
+                      ) : (
+                        <div className="space-y-2 px-2">
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-surface-custom-500 text-center mb-3">
+                            Acceso
+                          </p>
+                          <Link
+                            to="/login"
+                            className="flex items-center rounded-xl font-bold transition-all gradient-primary text-white shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 px-4 py-3 space-x-3 justify-center"
+                          >
+                            <LogOut size={18} className="rotate-180" />
+                            <span className="text-sm font-bold tracking-tight">Iniciar Sesión</span>
+                          </Link>
+                          <Link
+                            to="/register"
+                            className="flex items-center rounded-xl font-bold transition-all border border-white/10 text-surface-custom-300 hover:bg-white/5 hover:text-white px-4 py-3 space-x-3 justify-center"
+                          >
+                            <UserIcon size={18} />
+                            <span className="text-sm font-bold tracking-tight">Registrarse</span>
+                          </Link>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );

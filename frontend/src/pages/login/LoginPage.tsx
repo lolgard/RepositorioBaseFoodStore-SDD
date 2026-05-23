@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, LogIn, ArrowRight, ShoppingBasket, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '@/shared/store/auth-store';
+import { getDefaultRouteForRole } from '@/shared/lib/redirect-by-role';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -10,14 +11,18 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading, error, clearError } = useAuthStore();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
       await login({ email, password });
-      navigate('/', { replace: true });
+      // Read updated user from store after login
+      const currentUser = useAuthStore.getState().user;
+      const redirectTo = searchParams.get('redirect') || getDefaultRouteForRole(currentUser?.role);
+      navigate(redirectTo, { replace: true });
     } catch {
-      // Error handles by store
+      // Error handled by store
     }
   };
 

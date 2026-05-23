@@ -9,6 +9,8 @@ export interface NavItem {
   path: string;
   icon?: string;
   allowedRoles: UserRole[];
+  /** If true, shown to unauthenticated (guest) users */
+  public?: boolean;
 }
 
 /**
@@ -21,7 +23,7 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   {
     label: 'Home',
-    path: '/',
+    path: '/home',
     allowedRoles: ['CLIENTE', 'STAFF', 'GESTOR', 'ADMIN'],
   },
   {
@@ -29,6 +31,7 @@ export const NAV_ITEMS: NavItem[] = [
     path: '/products',
     icon: '📦',
     allowedRoles: ['CLIENTE', 'STAFF', 'GESTOR', 'ADMIN'],
+    public: true,
   },
   {
     label: 'Ingredients',
@@ -46,7 +49,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'Orders',
     path: '/orders',
     icon: '📋',
-    allowedRoles: ['CLIENTE', 'GESTOR', 'ADMIN'],
+    allowedRoles: ['CLIENTE', 'GESTOR'],
   },
   {
     label: 'Users',
@@ -70,6 +73,7 @@ export const NAV_ITEMS: NavItem[] = [
     path: '/cart',
     icon: '🛒',
     allowedRoles: ['CLIENTE'],
+    public: true,
   },
   {
     label: 'System Config',
@@ -89,13 +93,14 @@ export const NAV_ITEMS: NavItem[] = [
  * Filters navigation items based on the user's role.
  * ADMIN sees all items — the frontend shows what's available,
  * and the backend enforces access at the API level.
+ * Unauthenticated users see items marked as `public`.
  */
 export function getNavItemsForRole(role: UserRole | undefined | null): NavItem[] {
   if (!role) {
-    // Unauthenticated users see nothing in the main nav
-    return [];
+    // Unauthenticated users see public navigation items (Catalog, Cart)
+    return NAV_ITEMS.filter((item) => item.public);
   }
   return NAV_ITEMS.filter(
-    (item) => item.allowedRoles.includes(role) || role === 'ADMIN',
+    (item) => item.allowedRoles.includes(role),
   );
 }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useCartStore, getTotalItems, getSubtotal } from '@/shared/store/cart-store';
 import { CouponInput } from '@/widgets/cart/CouponInput';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, ShoppingBag, X, Check, MapPin } from 'lucide-react';
+import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, ShoppingBag, X, Check, MapPin, LogIn } from 'lucide-react';
 import { listAddresses } from '@/shared/api/address-api';
 import { createOrder } from '@/shared/api/order-api';
 import type { Address } from '@/entities/address/types';
@@ -17,6 +17,7 @@ export default function CartPage() {
   const subtotal = getSubtotal(items);
   
   const user = useAuthStore((s) => s.user);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const isClient = user?.role === 'CLIENTE';
 
 
@@ -244,6 +245,14 @@ export default function CartPage() {
               >
                 <span>Finalizar Compra</span>
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            ) : !isAuthenticated ? (
+              <button
+                onClick={() => navigate('/login?redirect=/cart')}
+                className="w-full btn-premium gradient-primary text-white py-4 flex items-center justify-center gap-3 shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 hover:scale-[1.02] transition-all group"
+              >
+                <LogIn size={20} />
+                <span>Iniciar Sesión para Comprar</span>
               </button>
             ) : (
               <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-amber-400 text-center">
