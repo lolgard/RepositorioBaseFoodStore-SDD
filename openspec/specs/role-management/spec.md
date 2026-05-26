@@ -1,4 +1,9 @@
-## ADDED Requirements
+# Role Management
+
+## Purpose
+Define role definitions and access control logic for the system.
+
+## Requirements
 
 ### Requirement: Role Definition
 The system SHALL define four roles with hierarchical permissions: Cliente, Staff, Gestor, Admin.
@@ -6,10 +11,10 @@ The system SHALL define four roles with hierarchical permissions: Cliente, Staff
 #### Scenario: Role hierarchy
 - **WHEN** the system is initialized
 - **THEN** the following roles exist:
-  - `CLIENTE`: Basic access — view catalog, manage own cart/orders/profile
-  - `STAFF`: Inventory access — manage products, categories, ingredients, stock
-  - `GESTOR`: Order management — view and manage all orders, update order states
-  - `ADMIN`: Full access — user administration, system configuration, all permissions
+  - `CLIENTE`: Basic access – view catalog, manage own cart/orders/profile
+  - `STAFF`: Inventory access – manage products, categories, ingredients, stock
+  - `GESTOR`: Order management – view and manage all orders, update order states
+  - `ADMIN`: Full access – user administration, system configuration, all permissions
 
 #### Scenario: Role seed on startup
 - **WHEN** the application starts for the first time (no roles in database)

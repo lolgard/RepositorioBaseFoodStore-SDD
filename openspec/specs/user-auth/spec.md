@@ -1,5 +1,8 @@
-## ADDED Requirements
+# User Auth
 
+## Purpose
+Define user authentication, registration, and session management logic.
+## Requirements
 ### Requirement: User Registration
 The system SHALL allow new customers to register with email, password, first name, last name, and optional phone number.
 
@@ -66,7 +69,7 @@ The system SHALL allow authenticated users to logout, invalidating their refresh
 
 #### Scenario: Logout without token
 - **WHEN** an authenticated user sends a POST request to `/api/v1/auth/logout` without a refresh token
-- **THEN** the system returns HTTP 200 (idempotent — no token to invalidate is acceptable)
+- **THEN** the system returns HTTP 200 (idempotent – no token to invalidate is acceptable)
 
 ### Requirement: Token-Bearing Request Authentication
 The system SHALL authenticate requests that include a valid JWT access token in the Authorization header.
@@ -82,3 +85,20 @@ The system SHALL authenticate requests that include a valid JWT access token in 
 #### Scenario: Token with wrong signature
 - **WHEN** a request includes a JWT signed with a different secret key
 - **THEN** the system returns HTTP 401 Unauthorized
+
+### Requirement: Checkout requires authentication
+The system SHALL require users to be authenticated before they can complete a purchase (checkout). Unauthenticated users attempting to checkout SHALL be redirected to the login page.
+
+#### Scenario: Authenticated user checkout
+- **WHEN** an authenticated user with role `CLIENTE` clicks "Finalizar Compra" in the cart
+- **THEN** the system SHALL open the checkout modal with address selection and payment options
+
+#### Scenario: Unauthenticated user attempts checkout
+- **WHEN** an unauthenticated user clicks "Finalizar Compra" in the cart
+- **THEN** the system SHALL redirect to `/login?redirect=/cart`
+- **THEN** after successful login, the system SHALL redirect back to `/cart`
+
+#### Scenario: Staff/Admin user cannot checkout
+- **WHEN** an authenticated user with role `STAFF`, `GESTOR`, or `ADMIN` clicks "Finalizar Compra"
+- **THEN** the system SHALL show a message indicating that the account type cannot make purchases (existing behavior)
+

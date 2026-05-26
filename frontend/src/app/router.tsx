@@ -16,7 +16,6 @@ const IngredientListPage = lazy(() => import('@/pages/ingredients/IngredientList
 const IngredientFormPage = lazy(() => import('@/pages/ingredients/IngredientFormPage'));
 const ProductListPage = lazy(() => import('@/pages/products/ProductListPage'));
 const ProductFormPage = lazy(() => import('@/pages/products/ProductFormPage'));
-const ProductDetailPage = lazy(() => import('@/pages/products/ProductDetailPage'));
 const AddressListPage = lazy(() => import('@/pages/addresses/AddressListPage'));
 const AddressFormPage = lazy(() => import('@/pages/addresses/AddressFormPage'));
 const CartPage = lazy(() => import('@/pages/cart/CartPage'));
@@ -164,14 +163,6 @@ export function AppRouter() {
                   <ProductFormPage />
                 </AppLayout>
               </RoleProtectedRoute>
-            }
-          />
-          <Route
-            path="/products/:id"
-            element={
-              <AppLayout>
-                <ProductDetailPage />
-              </AppLayout>
             }
           />
 

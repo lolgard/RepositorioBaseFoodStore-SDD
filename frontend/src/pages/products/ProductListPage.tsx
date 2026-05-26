@@ -13,13 +13,15 @@ import {
   PackageX,
   Tag
 } from 'lucide-react';
-import { listProducts, deleteProduct, fetchCategoriesFlat } from '@/shared/api/product-api';
+import { listProducts, deleteProduct, fetchCategoriesFlat, fetchIngredientsFlat } from '@/shared/api/product-api';
 import { useAuthStore } from '@/shared/store/auth-store';
 import { useToastStore } from '@/shared/store/toast-store';
 import { useCartStore } from '@/shared/store/cart-store';
 import { isRoleAtLeast } from '@/shared/config/roles';
 import ImageModal from '@/shared/ui/ImageModal';
+import { ProductModal } from '@/components/ProductModal';
 import type { Product, Category } from '@/entities/product/types';
+import type { Ingredient } from '@/entities/ingredient/types';
 
 export default function ProductListPage() {
   const navigate = useNavigate();
@@ -30,6 +32,8 @@ export default function ProductListPage() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -44,9 +48,12 @@ export default function ProductListPage() {
   const limit = 12;
 
   useEffect(() => {
-    fetchCategoriesFlat()
-      .then(setCategories)
-      .catch(() => addToast('Failed to load categories', 'error'));
+    Promise.all([fetchCategoriesFlat(), fetchIngredientsFlat()])
+      .then(([cats, ings]) => {
+        setCategories(cats);
+        setIngredients(ings);
+      })
+      .catch(() => addToast('Failed to load data', 'error'));
   }, [addToast]);
 
   const fetchProducts = useCallback(async () => {
@@ -230,9 +237,9 @@ export default function ProductListPage() {
             <motion.div 
               key={p.id} 
               variants={itemAnim}
-              className="card-premium group overflow-hidden flex flex-col cursor-pointer"
-              onClick={() => navigate(`/products/${p.id}`)}
-            >
+               className="card-premium group overflow-hidden flex flex-col cursor-pointer"
+               onClick={() => setSelectedProduct(p)}
+             >
               {/* Product Image */}
               <div 
                 className="relative h-56 overflow-hidden cursor-zoom-in"
@@ -426,11 +433,19 @@ export default function ProductListPage() {
           </div>
         )}
       </AnimatePresence>
-      <ImageModal
-        isOpen={previewOpen}
-        onClose={() => setPreviewOpen(false)}
-        src={selectedProductImageUrl || 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=600&auto=format&fit=crop'}
-      />
-    </div>
-  );
-}
+       <ImageModal
+         isOpen={previewOpen}
+         onClose={() => setPreviewOpen(false)}
+         src={selectedProductImageUrl || 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=600&auto=format&fit=crop'}
+       />
+       {selectedProduct && (
+         <ProductModal
+           product={selectedProduct}
+           ingredients={ingredients}
+           isOpen={!!selectedProduct}
+           onClose={() => setSelectedProduct(null)}
+         />
+       )}
+     </div>
+   );
+ }
