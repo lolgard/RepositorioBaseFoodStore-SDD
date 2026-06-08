@@ -97,5 +97,11 @@ Este proyecto usa **OPSX** (Spec-Driven Development):
 
 Food Store Development Team
 
+Manuel Rivas
+Julio Rivas
+Enzo Cercola
+Camila Franco
+Joaquin Cosentino
+
 Email: admin@foodstore.com
 Password: admin123!
